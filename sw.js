@@ -1,5 +1,5 @@
 // STOU Exam Pass Service Worker - Offline PWA Support (GitHub Pages Compatible)
-const CACHE_NAME = 'stou-exam-pass-v7.0.0';
+const CACHE_NAME = 'stou-exam-pass-v7.1.0';
 
 const PRECACHE_ASSETS = [
   './',

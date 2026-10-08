@@ -1378,6 +1378,13 @@ const App = {
         this.exportExcelMultiSheet();
       });
     }
+
+    const btnSyncExcel = document.getElementById('btn-sync-export-excel');
+    if (btnSyncExcel) {
+      btnSyncExcel.addEventListener('click', () => {
+        this.exportExcelMultiSheet();
+      });
+    }
   },
 
   // ═══════════════════════════════════
@@ -1697,6 +1704,8 @@ const App = {
     const student = this.data.student || {};
     const curriculum = this.data.curriculum || [];
     const courses = this.data.courses || [];
+    const examCenter = this.data.examCenter || {};
+    const studyPlan = this.data.studyPlan || [];
 
     const earnedCourses = curriculum.filter(c => c.status === 'passed' || c.status === 'transferred');
     const totalPassedCredits = earnedCourses.reduce((sum, c) => sum + (c.credits || 6), 0);
@@ -1708,6 +1717,8 @@ const App = {
 
     const remainingCredits = Math.max(0, 126 - totalPassedCredits);
     const progressPercent = Math.min(100, Math.round((totalPassedCredits / 126) * 100));
+    const remainingCoursesEst = Math.ceil(remainingCredits / 6);
+    const semestersEst = Math.ceil(remainingCoursesEst / 3);
 
     // Category breakdown
     const genPassed = earnedCourses.filter(c => c.category?.includes('หมวดวิชาศึกษาทั่วไป')).length * 6;
@@ -1715,101 +1726,649 @@ const App = {
     const majorElecPassed = earnedCourses.filter(c => c.category?.includes('กลุ่มวิชาเลือก')).length * 6;
     const freePassed = earnedCourses.filter(c => c.category?.includes('หมวดวิชาเลือกเสรี')).length * 6;
 
-    const nowTh = new Date().toLocaleString('th-TH');
+    // Reading Tracker stats
+    let totalUnits = 0;
+    let completedUnits = 0;
+    let totalSubUnits = 0;
+    let completedSubUnits = 0;
+    studyPlan.forEach(b => {
+      (b.units || []).forEach(u => {
+        totalUnits++;
+        if (u.completed) completedUnits++;
+        const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
+        if (subs.length > 0) {
+          totalSubUnits += subs.length;
+          completedSubUnits += subs.filter(s => s.completed).length;
+        } else {
+          totalSubUnits++;
+          if (u.completed) completedSubUnits++;
+        }
+      });
+    });
+    const readingPercent = totalSubUnits > 0 ? Math.round((completedSubUnits / totalSubUnits) * 100) : 0;
 
-    const esc = (val) => {
-      if (val === null || val === undefined) return '""';
-      const str = String(val).replace(/"/g, '""');
-      return `"${str}"`;
+    const now = new Date();
+    const yearTh = now.getFullYear() + 543;
+    const nowTh = now.toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' });
+
+    // XML Spreadsheet helper utilities
+    const esc = (val) => this.escapeXml(val);
+    const c = (val, styleId = 'CellNormal', type = 'String', mergeAcross = 0) => {
+      const mAttr = mergeAcross > 0 ? ` ss:MergeAcross="${mergeAcross}"` : '';
+      const sAttr = styleId ? ` ss:StyleID="${styleId}"` : '';
+      const v = (val === null || val === undefined) ? '' : val;
+      return `<Cell${sAttr}${mAttr}><Data ss:Type="${type}">${esc(v)}</Data></Cell>`;
+    };
+    const r = (cells, height = 21) => {
+      const hAttr = height ? ` ss:Height="${height}"` : '';
+      return `<Row${hAttr}>${cells.join('')}</Row>`;
+    };
+    const emptyRow = (height = 10) => `<Row ss:Height="${height}"/>`;
+    const sectionRow = (title, colsCount = 6, style = 'SectionBar') => {
+      return `<Row ss:Height="25"><Cell ss:StyleID="${style}" ss:MergeAcross="${colsCount - 1}"><Data ss:Type="String">  ${esc(title)}</Data></Cell></Row>`;
     };
 
-    const rows = [
-      [esc('มหาวิทยาลัยสุโขทัยธรรมาธิราช (STOU)'), esc('รายงานสรุปผลการศึกษาและตารางสอบ 126 หน่วยกิต')],
-      [esc(`ข้อมูลออกรายงาน ณ วันที่: ${nowTh}`)],
-      [],
-      [esc('════════ ข้อมูลนักศึกษาและหลักสูตร ════════')],
-      [esc('รหัสนักศึกษา'), esc(student.studentId || '-'), esc('ชื่อ-นามสกุล'), esc(student.name || '-')],
-      [esc('ระดับการศึกษา'), esc(student.degree || 'ปริญญาตรี'), esc('สาขาวิชา'), esc(student.faculty || '-')],
-      [esc('วิชาเอก'), esc(student.major || '-'), esc('ศูนย์วิทยพัฒนา'), esc(student.center || '-')],
-      [esc('ภาคการศึกษา'), esc(student.semester || '1'), esc('ปีการศึกษา'), esc(student.academicYear || '2567')],
-      [],
-      [esc('════════ สรุปความก้าวหน้าหน่วยกิต (Dashboard KPIs) ════════')],
-      [esc('หน่วยกิตสะสมที่ผ่านแล้ว (Earned Credits)'), totalPassedCredits, esc('หน่วยกิตเป้าหมายตามหลักสูตร'), 126],
-      [esc('ความสำเร็จของการศึกษา (%)'), `${progressPercent}%`, esc('หน่วยกิตคงเหลือที่ต้องเก็บเพิ่ม'), remainingCredits],
-      [esc('ชุดวิชาที่สอบผ่านแล้ว (S / H)'), passedCount, esc('ชุดวิชาเทียบโอนสำเร็จ'), transferredCount],
-      [esc('ชุดวิชาที่ลงทะเบียนจะสอบในรอบนี้'), scheduledCount, esc('ชุดวิชาที่ยังไม่ลงทะเบียน'), notTakenCount],
-      [esc('ชุดวิชาที่สอบไม่ผ่าน (รอสอบซ่อม/ลงใหม่)'), failedCount, esc('ชุดวิชาทั้งหมดในหลักสูตร'), curriculum.length],
-      [],
-      [esc('════════ การวิเคราะห์หน่วยกิตแยกตามหมวดวิชา ════════')],
-      [esc('หมวดวิชา'), esc('เป้าหมาย (หน่วยกิต)'), esc('สะสมแล้ว (หน่วยกิต)'), esc('คงเหลือ (หน่วยกิต)'), esc('ความคืบหน้า (%)')],
-      [esc('1. หมวดวิชาศึกษาทั่วไป (General Education)'), 30, genPassed, Math.max(0, 30 - genPassed), `${Math.round((genPassed / 30) * 100)}%`],
-      [esc('2. หมวดวิชาเฉพาะ (กลุ่มวิชาบังคับ)'), 78, corePassed, Math.max(0, 78 - corePassed), `${Math.round((corePassed / 78) * 100)}%`],
-      [esc('3. หมวดวิชาเฉพาะ (กลุ่มวิชาเลือก)'), 12, majorElecPassed, Math.max(0, 12 - majorElecPassed), `${Math.round((majorElecPassed / 12) * 100)}%`],
-      [esc('4. หมวดวิชาเลือกเสรี (Free Elective)'), 6, freePassed, Math.max(0, 6 - freePassed), `${Math.round((freePassed / 6) * 100)}%`],
-      [],
-      [esc('════════ ตารางสอบรายวิชาที่ลงทะเบียนไว้ (Active Scheduled Exams) ════════')],
-      [esc('ลำดับ'), esc('รหัสวิชา'), esc('ชื่อชุดวิชา'), esc('หน่วยกิต'), esc('ประเภทการสอบ'), esc('รูปแบบ'), esc('วันที่สอบ'), esc('เวลาสอบ'), esc('สถานที่สอบ'), esc('ห้องสอบ'), esc('เลขที่นั่ง')],
+    // ═════════════════════════════════════════════
+    // SHEET 1: สรุปภาพรวมและสถิติ (Academic Overview & KPIs)
+    // ═════════════════════════════════════════════
+    const s1Cols = [
+      '<Column ss:Width="200"/>',
+      '<Column ss:Width="140"/>',
+      '<Column ss:Width="200"/>',
+      '<Column ss:Width="140"/>',
+      '<Column ss:Width="120"/>',
+      '<Column ss:Width="120"/>'
+    ].join('');
+
+    const s1Rows = [
+      r([c('มหาวิทยาลัยสุโขทัยธรรมาธิราช (STOU) - รายงานสรุปความก้าวหน้าการศึกษา', 'TitleStyle', 'String', 5)], 32),
+      r([c(`ข้อมูลออกรายงาน ณ วันที่: ${nowTh} • ระบบ STOU Exam Pass`, 'SubTitleStyle', 'String', 5)], 18),
+      emptyRow(8),
+      sectionRow('ข้อมูลนักศึกษาและหลักสูตรที่ศึกษา', 6, 'SectionBar'),
+      r([c('รหัสนักศึกษา', 'CellBold'), c(student.studentId || '-', 'CellCenter'), c('ชื่อ-นามสกุล', 'CellBold'), c(student.name || '-', 'CellNormal', 'String', 2)]),
+      r([c('ระดับการศึกษา', 'CellBold'), c(student.degree || 'ปริญญาตรี', 'CellCenter'), c('สาขาวิชา', 'CellBold'), c(student.faculty || '-', 'CellNormal', 'String', 2)]),
+      r([c('วิชาเอก', 'CellBold'), c(student.major || '-', 'CellNormal', 'String', 1), c('ศูนย์วิทยพัฒนา', 'CellBold'), c(student.center || '-', 'CellNormal', 'String', 1)]),
+      r([c('ภาคการศึกษา', 'CellBold'), c(student.semester || '1', 'CellCenter'), c('ปีการศึกษา', 'CellBold'), c(student.academicYear || String(yearTh), 'CellCenter'), c('หลักสูตรทั้งหมด', 'CellBold'), c('126 หน่วยกิต', 'CellCenter')]),
+      emptyRow(12),
+      sectionRow('แผงสรุปความสำเร็จทางการศึกษา (Academic Progress KPIs)', 6, 'SectionBarGreen'),
+      r([c('หน่วยกิตสะสม (Earned)', 'KpiLabel', 'String', 1), c('ความสำเร็จ (%)', 'KpiLabel'), c('หน่วยกิตคงเหลือ', 'KpiLabel'), c('วิชาที่ต้องเรียนเพิ่ม (ประมาณ)', 'KpiLabel'), c('คาดการณ์ภาคเรียนที่จบ', 'KpiLabel')], 20),
+      r([c(`${totalPassedCredits} / 126 หน่วยกิต`, 'KpiValueGreen', 'String', 1), c(`${progressPercent}%`, 'KpiValueGreen'), c(`${remainingCredits} หน่วยกิต`, 'KpiValue'), c(`${remainingCoursesEst} ชุดวิชา`, 'KpiValue'), c(`${semestersEst} ภาคเรียน`, 'KpiValue')], 28),
+      emptyRow(12),
+      sectionRow('ตารางวิเคราะห์หน่วยกิตแยก 4 หมวดวิชาตามโครงสร้างหลักสูตร', 6, 'SectionBar'),
+      r([c('หมวดวิชาตามโครงสร้างหลักสูตร', 'TableHeader', 'String', 1), c('เกณฑ์เป้าหมาย (นก.)', 'TableHeader'), c('สะสมสำเร็จ (นก.)', 'TableHeader'), c('คงเหลือ (นก.)', 'TableHeader'), c('ความคืบหน้า (%)', 'TableHeader')], 22),
+      r([c('1. หมวดวิชาศึกษาทั่วไป (General Education)', 'CellBold', 'String', 1), c(30, 'CellNumber', 'Number'), c(genPassed, 'CellNumber', 'Number'), c(Math.max(0, 30 - genPassed), 'CellNumber', 'Number'), c(`${Math.round((genPassed / 30) * 100)}%`, 'CellCenter')]),
+      r([c('2. หมวดวิชาเฉพาะ - กลุ่มวิชาบังคับ (Core Compulsory)', 'CellBold', 'String', 1), c(78, 'CellNumber', 'Number'), c(corePassed, 'CellNumber', 'Number'), c(Math.max(0, 78 - corePassed), 'CellNumber', 'Number'), c(`${Math.round((corePassed / 78) * 100)}%`, 'CellCenter')]),
+      r([c('3. หมวดวิชาเฉพาะ - กลุ่มวิชาเลือก (Major Electives)', 'CellBold', 'String', 1), c(12, 'CellNumber', 'Number'), c(majorElecPassed, 'CellNumber', 'Number'), c(Math.max(0, 12 - majorElecPassed), 'CellNumber', 'Number'), c(`${Math.round((majorElecPassed / 12) * 100)}%`, 'CellCenter')]),
+      r([c('4. หมวดวิชาเลือกเสรี (Free Electives)', 'CellBold', 'String', 1), c(6, 'CellNumber', 'Number'), c(freePassed, 'CellNumber', 'Number'), c(Math.max(0, 6 - freePassed), 'CellNumber', 'Number'), c(`${Math.round((freePassed / 6) * 100)}%`, 'CellCenter')]),
+      r([c('รวมทั้งสิ้นตามโครงสร้างหลักสูตร', 'TableHeader', 'String', 1), c(126, 'CellBoldCenter', 'Number'), c(totalPassedCredits, 'CellBoldCenter', 'Number'), c(remainingCredits, 'CellBoldCenter', 'Number'), c(`${progressPercent}%`, 'CellBoldCenter')], 23),
+      emptyRow(12),
+      sectionRow('สถิติจำนวนชุดวิชาตามสถานะการเรียน', 6, 'SectionBarPurple'),
+      r([c('สถานะชุดวิชา', 'TableHeader', 'String', 2), c('จำนวนชุดวิชา', 'TableHeader'), c('หน่วยกิตรวม', 'TableHeader'), c('สัดส่วนในหลักสูตร', 'TableHeader')], 22),
+      r([c('สอบผ่านแล้ว (S / H)', 'BadgePassed', 'String', 2), c(passedCount, 'CellCenter', 'Number'), c(passedCount * 6, 'CellCenter', 'Number'), c(`${Math.round((passedCount / (curriculum.length || 1)) * 100)}%`, 'CellCenter')]),
+      r([c('เทียบโอนสำเร็จ', 'BadgeTransferred', 'String', 2), c(transferredCount, 'CellCenter', 'Number'), c(transferredCount * 6, 'CellCenter', 'Number'), c(`${Math.round((transferredCount / (curriculum.length || 1)) * 100)}%`, 'CellCenter')]),
+      r([c('ลงทะเบียนจะสอบในรอบปัจจุบัน', 'BadgeScheduled', 'String', 2), c(scheduledCount, 'CellCenter', 'Number'), c(scheduledCount * 6, 'CellCenter', 'Number'), c(`${Math.round((scheduledCount / (curriculum.length || 1)) * 100)}%`, 'CellCenter')]),
+      r([c('สอบไม่ผ่าน (รอสอบซ่อม/ลงใหม่)', 'BadgeFailed', 'String', 2), c(failedCount, 'CellCenter', 'Number'), c(failedCount * 6, 'CellCenter', 'Number'), c(`${Math.round((failedCount / (curriculum.length || 1)) * 100)}%`, 'CellCenter')]),
+      r([c('ยังไม่ได้ลงทะเบียน', 'BadgeNotTaken', 'String', 2), c(notTakenCount, 'CellCenter', 'Number'), c(notTakenCount * 6, 'CellCenter', 'Number'), c(`${Math.round((notTakenCount / (curriculum.length || 1)) * 100)}%`, 'CellCenter')]),
+      r([c('รวมชุดวิชาในหลักสูตรทั้งหมด', 'TableHeader', 'String', 2), c(curriculum.length, 'CellBoldCenter', 'Number'), c(curriculum.length * 6, 'CellBoldCenter', 'Number'), c('100%', 'CellBoldCenter')], 23),
+      emptyRow(12),
+      sectionRow('สรุปความคืบหน้าการอ่านหนังสือเตรียมสอบ', 6, 'SectionBarAmber'),
+      r([c('จำนวนชุดวิชาในระบบอ่านหนังสือ', 'CellBold'), c(`${studyPlan.length} เล่ม`, 'CellCenter'), c('หน่วยการเรียนที่อ่านจบ', 'CellBold'), c(`${completedUnits} / ${totalUnits} หน่วย`, 'CellCenter'), c('ตอนย่อยที่อ่านจบ', 'CellBold'), c(`${completedSubUnits} / ${totalSubUnits} ตอน (${readingPercent}%)`, 'CellCenter')])
+    ];
+
+    // ═════════════════════════════════════════════
+    // SHEET 2: ตารางสอบและสนามสอบ (Exam Schedule & Venues)
+    // ═════════════════════════════════════════════
+    const s2Cols = [
+      '<Column ss:Width="45"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="210"/>',
+      '<Column ss:Width="65"/>',
+      '<Column ss:Width="140"/>',
+      '<Column ss:Width="95"/>',
+      '<Column ss:Width="160"/>',
+      '<Column ss:Width="85"/>',
+      '<Column ss:Width="120"/>',
+      '<Column ss:Width="160"/>',
+      '<Column ss:Width="120"/>',
+      '<Column ss:Width="60"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="230"/>'
+    ].join('');
+
+    const s2Rows = [
+      r([c('ตารางสอบประจำภาคการศึกษาและข้อมูลสนามสอบ (STOU Examination Schedule)', 'TitleStyle', 'String', 13)], 32),
+      r([c(`ข้อมูลตารางสอบ ณ วันที่: ${nowTh} • ศูนย์สอบ: ${examCenter.centerName || 'มสธ.'} (${examCenter.province || '-'})`, 'SubTitleStyle', 'String', 13)], 18),
+      emptyRow(8),
+      sectionRow('รายการชุดวิชาที่มีกำหนดการสอบในภาคการศึกษานี้', 14, 'SectionBar'),
+      r([
+        c('ลำดับ', 'TableHeader'),
+        c('รหัสวิชา', 'TableHeader'),
+        c('ชื่อชุดวิชา', 'TableHeader'),
+        c('หน่วยกิต', 'TableHeader'),
+        c('ประเภทการสอบ', 'TableHeader'),
+        c('รูปแบบ', 'TableHeader'),
+        c('วันที่สอบ', 'TableHeader'),
+        c('คาบสอบ', 'TableHeader'),
+        c('เวลาสอบ', 'TableHeader'),
+        c('สนามสอบ / ระบบสอบ', 'TableHeader'),
+        c('อาคาร / ห้องสอบ', 'TableHeader'),
+        c('แถว', 'TableHeader'),
+        c('เลขที่นั่ง', 'TableHeader'),
+        c('คำแนะนำเตรียมตัวสอบ', 'TableHeader')
+      ], 24)
     ];
 
     if (courses.length === 0) {
-      rows.push([esc('-'), esc('-'), esc('ยังไม่มีวิชาที่กำหนดจะสอบในรอบนี้'), esc('-'), esc('-'), esc('-'), esc('-'), esc('-'), esc('-'), esc('-'), esc('-')]);
+      s2Rows.push(r([c('ยังไม่มีวิชาที่กำหนดจะสอบในรอบนี้ (สามารถเพิ่มหรือเลือกสถานะเป็น "จะสอบ" ได้ในแอป)', 'CellCenter', 'String', 13)], 25));
     } else {
-      courses.forEach((c, idx) => {
-        const startTime = c.startTime || (c.examSession === 'afternoon' ? '13:30' : '09:00');
-        const endTime = c.endTime || (c.examSession === 'afternoon' ? '16:30' : '12:00');
+      courses.forEach((crs, idx) => {
+        const startTime = crs.startTime || (crs.examSession === 'afternoon' ? '13:30' : '09:00');
+        const endTime = crs.endTime || (crs.examSession === 'afternoon' ? '16:30' : '12:00');
         const [sh] = startTime.split(':').map(Number);
-        const isMorning = sh < 13;
-        const sessionLabel = isMorning ? 'สอบช่วงเช้า' : 'สอบช่วงบ่าย';
-        const timeStr = `${sessionLabel} (${startTime} - ${endTime} น.)`;
-        const seatStr = c.seatNumber ? `${c.seatNumber}${c.examRow ? ` (แถว ${c.examRow})` : ''}` : '-';
+        const sessionLabel = sh < 13 ? 'คาบเช้า' : 'คาบบ่าย';
+        const timeStr = `${startTime} - ${endTime} น.`;
+        const seatStr = crs.seatNumber || '-';
+        const rowStr = crs.examRow || '-';
+        const formatLabel = crs.examFormat === 'online' ? 'สอบออนไลน์' : 'สนามสอบ';
+        const formatBadge = crs.examFormat === 'online' ? 'BadgeScheduled' : 'BadgeTransferred';
+        const advice = crs.examFormat === 'online'
+          ? 'ตรวจเช็คอุปกรณ์ คอมพิวเตอร์ กล้อง และอินเทอร์เน็ตล่วงหน้า 30 นาที'
+          : 'เตรียมบัตรประจำตัวประชาชน, บัตรนักศึกษา, ดินสอ 2B, ยางลบ, ปากกาน้ำเงิน';
 
-        rows.push([
-          idx + 1,
-          esc(c.courseCode),
-          esc(c.courseNameTh),
-          c.credits || 6,
-          esc(c.examTypeName || 'สอบไล่ปกติ'),
-          esc(c.examFormat === 'online' ? 'สอบออนไลน์' : 'สนามสอบ'),
-          esc(c.examDateTh || c.examDate || 'ยังไม่กำหนดวัน'),
-          esc(timeStr),
-          esc(c.examVenue || '-'),
-          esc(c.examRoom || '-'),
-          esc(seatStr)
-        ]);
+        s2Rows.push(r([
+          c(idx + 1, 'CellCenter', 'Number'),
+          c(crs.courseCode, 'CellBoldCenter'),
+          c(crs.courseNameTh, 'CellBold'),
+          c(crs.credits || 6, 'CellCenter', 'Number'),
+          c(crs.examTypeName || 'สอบไล่ประจำภาคปกติ', 'CellNormal'),
+          c(formatLabel, formatBadge),
+          c(crs.examDateTh || crs.examDate || 'ยังไม่กำหนดวัน', 'CellCenter'),
+          c(sessionLabel, 'CellCenter'),
+          c(timeStr, 'CellCenter'),
+          c(crs.examVenue || examCenter.centerName || '-', 'CellNormal'),
+          c(crs.examRoom || '-', 'CellCenter'),
+          c(rowStr, 'CellCenter'),
+          c(seatStr, 'CellCenter'),
+          c(advice, 'CellNormal')
+        ], 22));
       });
     }
 
-    rows.push([]);
-    rows.push([esc('════════ โครงสร้างหลักสูตรและรายวิชาทั้งหมด (126 หน่วยกิต) ════════')]);
-    rows.push([esc('ลำดับ'), esc('รหัสวิชา'), esc('ชื่อชุดวิชา (ภาษาไทย)'), esc('หน่วยกิต'), esc('หมวดวิชา'), esc('คาบเวลาสอบตามหลักสูตร'), esc('สถานะปัจจุบัน'), esc('ผลการเรียน')]);
+    s2Rows.push(emptyRow(12));
+    s2Rows.push(sectionRow('ข้อควรปฏิบัติที่สำคัญในการเข้าสอบ มสธ.', 14, 'SectionBarAmber'));
+    s2Rows.push(r([c('1. การเข้าห้องสอบ: ผู้เข้าสอบต้องไปถึงสนามสอบก่อนเวลาเริ่มสอบอย่างน้อย 30 นาที และเข้าห้องสอบก่อนเวลาเริ่มสอบ 15 นาที', 'GuideBlock', 'String', 13)], 20));
+    s2Rows.push(r([c('2. หลักฐานการเข้าสอบ: บัตรประจำตัวประชาชน (หรือบัตรที่ราชการออกให้มีรูปถ่าย) และบัตรประจำตัวนักศึกษา (หรือใบอนุญาตชั่วคราว)', 'GuideBlock', 'String', 13)], 20));
+    s2Rows.push(r([c('3. อุปกรณ์ทำข้อสอบ: ดินสอดำ 2B ขึ้นไป สำหรับระบายกระดาษคำตอบ ปากกาลูกลื่นสีน้ำเงินหรือดำ ยางลบดินสอที่สะอาด', 'GuideBlock', 'String', 13)], 20));
+    s2Rows.push(r([c('4. ข้อห้าม: ห้ามนำโทรศัพท์มือถือ อุปกรณ์สื่อสาร เอกสาร หรือสมุดจดเข้าห้องสอบโดยเด็ดขาด', 'GuideBlock', 'String', 13)], 20));
 
-    curriculum.forEach((c, idx) => {
-      const grade = c.status === 'passed' ? 'S / H (ผ่าน)' : c.status === 'transferred' ? 'เทียบโอน' : c.status === 'failed' ? 'U (ไม่ผ่าน)' : '-';
-      rows.push([
-        idx + 1,
-        esc(c.courseCode),
-        esc(c.courseNameTh),
-        c.credits || 6,
-        esc(c.category || '-'),
-        esc(c.examSlotTh || 'คาบสอบตามคู่มือ'),
-        esc(this.getStatusLabel(c.status)),
-        esc(grade)
-      ]);
+    // ═════════════════════════════════════════════
+    // SHEET 3: ความคืบหน้าการอ่านหนังสือ (Reading Tracker & Chapters)
+    // ═════════════════════════════════════════════
+    const s3Cols = [
+      '<Column ss:Width="45"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="190"/>',
+      '<Column ss:Width="160"/>',
+      '<Column ss:Width="70"/>',
+      '<Column ss:Width="210"/>',
+      '<Column ss:Width="100"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="85"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="240"/>',
+      '<Column ss:Width="240"/>'
+    ].join('');
+
+    const s3Rows = [
+      r([c('บันทึกความคืบหน้าการอ่านหนังสือและแผนการทบทวนรายหน่วย (Reading Progress Tracker)', 'TitleStyle', 'String', 11)], 32),
+      r([c(`ข้อมูลบันทึกการอ่านหนังสือ ณ วันที่: ${nowTh} • ติดตามรายหน่วย 1-15 และตอนย่อย`, 'SubTitleStyle', 'String', 11)], 18),
+      emptyRow(8),
+      sectionRow('รายการชุดวิชาและรายละเอียดการอ่านรายหน่วย (Unit 1 - 15)', 12, 'SectionBarGreen'),
+      r([
+        c('ลำดับ', 'TableHeader'),
+        c('รหัสวิชา', 'TableHeader'),
+        c('ชื่อชุดวิชา', 'TableHeader'),
+        c('เอกสารการสอน', 'TableHeader'),
+        c('หน่วยที่', 'TableHeader'),
+        c('ชื่อหน่วยการเรียนรู้', 'TableHeader'),
+        c('สถานะหน่วย', 'TableHeader'),
+        c('จำนวนตอน', 'TableHeader'),
+        c('อ่านจบแล้ว', 'TableHeader'),
+        c('ร้อยละ (%)', 'TableHeader'),
+        c('ตอนย่อยที่อ่านแล้ว', 'TableHeader'),
+        c('ตอนย่อยที่คงเหลือ (ต้องอ่านต่อ)', 'TableHeader')
+      ], 24)
+    ];
+
+    let unitRowIdx = 1;
+    if (studyPlan.length === 0) {
+      s3Rows.push(r([c('ยังไม่มีบันทึกการอ่านหนังสือ (สามารถกดปุ่ม "+ เพิ่มชุดวิชา" ในแท็บอ่านหนังสือได้ในแอป)', 'CellCenter', 'String', 11)], 25));
+    } else {
+      studyPlan.forEach(book => {
+        const units = book.units || [];
+        units.forEach(u => {
+          const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
+          const subsTotal = subs.length > 0 ? subs.length : 1;
+          const subsCompleted = subs.length > 0 ? subs.filter(s => s.completed).length : (u.completed ? 1 : 0);
+          const uPct = Math.round((subsCompleted / subsTotal) * 100);
+          const isDone = u.completed || (subs.length > 0 && subsCompleted === subsTotal);
+
+          const doneSubsList = subs.filter(s => s.completed).map(s => s.title || `ตอน ${s.id}`).join(', ') || (u.completed ? 'ครบทั้งหน่วย' : '-');
+          const remainSubsList = subs.filter(s => !s.completed).map(s => s.title || `ตอน ${s.id}`).join(', ') || (isDone ? 'ไม่มี (อ่านจบหมดแล้ว)' : 'ยังไม่ได้เริ่ม');
+
+          s3Rows.push(r([
+            c(unitRowIdx++, 'CellCenter', 'Number'),
+            c(book.courseCode, 'CellBoldCenter'),
+            c(book.courseNameTh || `ชุดวิชา ${book.courseCode}`, 'CellNormal'),
+            c(book.bookTitle || 'เอกสารการสอน มสธ.', 'CellNormal'),
+            c(`หน่วยที่ ${String(u.unit).padStart(2, '0')}`, 'CellBoldCenter'),
+            c(u.title || `หน่วยที่ ${u.unit}`, 'CellNormal'),
+            c(isDone ? 'อ่านจบแล้ว' : 'กำลังอ่าน', isDone ? 'BadgePassed' : 'BadgeScheduled'),
+            c(subsTotal, 'CellCenter', 'Number'),
+            c(subsCompleted, 'CellCenter', 'Number'),
+            c(`${uPct}%`, 'CellCenter'),
+            c(doneSubsList, 'CellNormal'),
+            c(remainSubsList, 'CellNormal')
+          ], 22));
+        });
+      });
+    }
+
+    s3Rows.push(emptyRow(12));
+    s3Rows.push(sectionRow('คำแนะนำการวางแผนการอ่านหนังสือ มสธ. (Study Plan Best Practices)', 12, 'SectionBar'));
+    s3Rows.push(r([c('1. การจัดเวลา: ใน 1 ชุดวิชามี 15 หน่วย แนะนำให้อ่านสัปดาห์ละ 1 หน่วย จะใช้เวลาประมาณ 15 สัปดาห์พอดีกับ 1 ภาคการศึกษา', 'GuideBlock', 'String', 11)], 20));
+    s3Rows.push(r([c('2. แผนรายวัน: ในแต่ละหน่วยมี 3-4 ตอนย่อย แนะนำแบ่งอ่านวันละ 1 ตอนย่อย (ใช้เวลาประมาณ 45-60 นาทีต่อวัน)', 'GuideBlock', 'String', 11)], 20));
+    s3Rows.push(r([c('3. แบบฝึกหัดท้ายตอน: ให้ทำแบบประเมินตนเองก่อนเรียนและหลังเรียนทุกครั้ง เพื่อตรวจวัดความเข้าใจเนื้อหา', 'GuideBlock', 'String', 11)], 20));
+    s3Rows.push(r([c('4. แผน 2 สัปดาห์ก่อนสอบ: สรุปประเด็นสำคัญและฝึกทำข้อสอบเก่าหรือแบบทดสอบออนไลน์ย้อนหลัง', 'GuideBlock', 'String', 11)], 20));
+
+    // ═════════════════════════════════════════════
+    // SHEET 4: โครงสร้างหลักสูตร 126 นก (Curriculum & Course Status)
+    // ═════════════════════════════════════════════
+    const s4Cols = [
+      '<Column ss:Width="45"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="230"/>',
+      '<Column ss:Width="65"/>',
+      '<Column ss:Width="200"/>',
+      '<Column ss:Width="140"/>',
+      '<Column ss:Width="130"/>',
+      '<Column ss:Width="110"/>'
+    ].join('');
+
+    const s4Rows = [
+      r([c('โครงสร้างหลักสูตรและสถานะรายวิชาทั้งหมด (STOU 126 Credits Curriculum)', 'TitleStyle', 'String', 7)], 32),
+      r([c(`ข้อมูลหลักสูตร ณ วันที่: ${nowTh} • เป้าหมายสำเร็จการศึกษา 126 หน่วยกิต`, 'SubTitleStyle', 'String', 7)], 18),
+      emptyRow(8),
+      sectionRow('รายชื่อชุดวิชาทั้งหมดในหลักสูตรและสถานะผลการศึกษา', 8, 'SectionBar'),
+      r([
+        c('ลำดับ', 'TableHeader'),
+        c('รหัสวิชา', 'TableHeader'),
+        c('ชื่อชุดวิชา (ภาษาไทย)', 'TableHeader'),
+        c('หน่วยกิต', 'TableHeader'),
+        c('หมวดวิชา / กลุ่มวิชา', 'TableHeader'),
+        c('คาบเวลาสอบตามหลักสูตร', 'TableHeader'),
+        c('สถานะปัจจุบัน', 'TableHeader'),
+        c('ผลการประเมิน', 'TableHeader')
+      ], 24)
+    ];
+
+    curriculum.forEach((cItem, idx) => {
+      const statusLabel = this.getStatusLabel(cItem.status);
+      let statusStyle = 'BadgeNotTaken';
+      let gradeLabel = '-';
+
+      if (cItem.status === 'passed') {
+        statusStyle = 'BadgePassed';
+        gradeLabel = 'S / H (ผ่าน)';
+      } else if (cItem.status === 'transferred') {
+        statusStyle = 'BadgeTransferred';
+        gradeLabel = 'เทียบโอนสำเร็จ';
+      } else if (['will_take', 'will_take_samrit', 'will_take_summer', 'will_take_retake'].includes(cItem.status)) {
+        statusStyle = 'BadgeScheduled';
+        gradeLabel = 'กำลังเรียน/จะสอบ';
+      } else if (cItem.status === 'failed') {
+        statusStyle = 'BadgeFailed';
+        gradeLabel = 'U (ไม่ผ่าน)';
+      }
+
+      s4Rows.push(r([
+        c(idx + 1, 'CellCenter', 'Number'),
+        c(cItem.courseCode, 'CellBoldCenter'),
+        c(cItem.courseNameTh, 'CellBold'),
+        c(cItem.credits || 6, 'CellCenter', 'Number'),
+        c(cItem.category || '-', 'CellNormal'),
+        c(cItem.examSlotTh || 'คาบสอบตามคู่มือ', 'CellCenter'),
+        c(statusLabel, statusStyle),
+        c(gradeLabel, 'CellCenter')
+      ], 22));
     });
 
-    const csvContent = '\uFEFF' + rows.map(r => r.join(',')).join('\r\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    s4Rows.push(emptyRow(10));
+    s4Rows.push(r([
+      c('รวมสรุปหน่วยกิตทั้งหมด', 'TableHeader', 'String', 2),
+      c(curriculum.reduce((sum, item) => sum + (item.credits || 6), 0), 'CellBoldCenter', 'Number'),
+      c(`สอบผ่านแล้ว: ${totalPassedCredits} นก. • คงเหลือ: ${remainingCredits} นก.`, 'TableHeader', 'String', 3)
+    ], 24));
+
+    // ═════════════════════════════════════════════
+    // SHEET 5: แผนการเรียนและวิชาคงเหลือ (Remaining Plan & Study Guide)
+    // ═════════════════════════════════════════════
+    const s5Cols = [
+      '<Column ss:Width="45"/>',
+      '<Column ss:Width="75"/>',
+      '<Column ss:Width="230"/>',
+      '<Column ss:Width="65"/>',
+      '<Column ss:Width="200"/>',
+      '<Column ss:Width="140"/>',
+      '<Column ss:Width="270"/>'
+    ].join('');
+
+    const uncompletedCourses = curriculum.filter(cItem => cItem.status !== 'passed' && cItem.status !== 'transferred');
+
+    const s5Rows = [
+      r([c('แผนการศึกษาและรายวิชาคงเหลือที่ต้องเก็บเพิ่ม (Remaining Courses & Study Advice)', 'TitleStyle', 'String', 6)], 32),
+      r([c(`ข้อมูลแผนการศึกษา ณ วันที่: ${nowTh} • ชุดวิชาที่ต้องเรียนเพิ่ม ${uncompletedCourses.length} วิชา (${remainingCredits} หน่วยกิต)`, 'SubTitleStyle', 'String', 6)], 18),
+      emptyRow(8),
+      sectionRow('รายชื่อชุดวิชาคงเหลือที่ต้องลงทะเบียนเรียนเพื่อสำเร็จการศึกษา', 7, 'SectionBarAmber'),
+      r([
+        c('ลำดับ', 'TableHeader'),
+        c('รหัสวิชา', 'TableHeader'),
+        c('ชื่อชุดวิชา', 'TableHeader'),
+        c('หน่วยกิต', 'TableHeader'),
+        c('หมวดวิชา', 'TableHeader'),
+        c('คาบสอบตามคู่มือ', 'TableHeader'),
+        c('แนวทางการลงทะเบียนเรียน', 'TableHeader')
+      ], 24)
+    ];
+
+    if (uncompletedCourses.length === 0) {
+      s5Rows.push(r([c('ยินดีด้วย! คุณสะสมหน่วยกิตครบตามโครงสร้างหลักสูตร 126 หน่วยกิตเรียบร้อยแล้ว', 'BadgePassed', 'String', 6)], 26));
+    } else {
+      uncompletedCourses.forEach((cItem, idx) => {
+        let planAdvice = 'แนะนำลงทะเบียนในภาคการศึกษาถัดไป (ตรวจสอบไม่ให้คาบสอบตรงกัน)';
+        if (cItem.status === 'failed') {
+          planAdvice = 'วิชานี้เคยได้ U: แนะนำลงสอบซ่อมในภาคเดียวกัน หรือลงทะเบียนใหม่';
+        } else if (['will_take', 'will_take_samrit', 'will_take_summer', 'will_take_retake'].includes(cItem.status)) {
+          planAdvice = 'ลงทะเบียนในรอบปัจจุบันแล้ว: มุ่งมั่นอ่านหนังสือและทำแบบฝึกหัด';
+        }
+
+        s5Rows.push(r([
+          c(idx + 1, 'CellCenter', 'Number'),
+          c(cItem.courseCode, 'CellBoldCenter'),
+          c(cItem.courseNameTh, 'CellBold'),
+          c(cItem.credits || 6, 'CellCenter', 'Number'),
+          c(cItem.category || '-', 'CellNormal'),
+          c(cItem.examSlotTh || 'คาบสอบตามคู่มือ', 'CellCenter'),
+          c(planAdvice, 'CellNormal')
+        ], 22));
+      });
+    }
+
+    s5Rows.push(emptyRow(12));
+    s5Rows.push(sectionRow('ข้อแนะนำในการวางแผนการศึกษาให้สำเร็จการศึกษาตามเป้าหมาย มสธ.', 7, 'SectionBar'));
+    s5Rows.push(r([c('1. การลงทะเบียนภาคปกติ: นักศึกษาสามารถลงทะเบียนได้สูงสุด 3 ชุดวิชา (18 หน่วยกิต) ต่อภาคการศึกษาปกติ', 'GuideBlock', 'String', 6)], 20));
+    s5Rows.push(r([c('2. การลงทะเบียนภาคฤดูร้อน: สามารถลงทะเบียนได้ 1 ชุดวิชา (6 หน่วยกิต) เพื่อช่วยเร่งการสะสมหน่วยกิต', 'GuideBlock', 'String', 6)], 20));
+    s5Rows.push(r([c('3. การเรียนโครงการสัมฤทธิบัตร: สามารถลงทะเบียนเรียนล่วงหน้าได้ตลอดทั้งปี เมื่อสอบผ่านสามารถนำผลการเรียนมาเทียบโอนได้ 100%', 'GuideBlock', 'String', 6)], 20));
+    s5Rows.push(r([c('4. การป้องกันการสอบชนกัน: ก่อนลงทะเบียน ต้องตรวจสอบว่าชุดวิชาที่เลือกไม่มีคาบสอบในวันและเวลาเดียวกัน (คาบ 1-4)', 'GuideBlock', 'String', 6)], 20));
+    s5Rows.push(r([c('5. การวางแผนสำเร็จการศึกษา: หากเหลืออีก ' + remainingCoursesEst + ' ชุดวิชา สามารถวางแผนลงทะเบียนได้ภายในประมาณ ' + semestersEst + ' ภาคการศึกษา', 'GuideBlock', 'String', 6)], 20));
+
+    // Styles XML Definition
+    const stylesXml = `
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="10" ss:Color="#0F172A"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="TitleStyle">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="14" ss:Color="#0369A1" ss:Bold="1"/>
+   <Interior ss:Color="#F0F9FF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SubTitleStyle">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#64748B" ss:Italic="1"/>
+   <Interior ss:Color="#F0F9FF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SectionBar">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#0284C7" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SectionBarGreen">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#059669" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SectionBarPurple">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#7C3AED" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="SectionBarAmber">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Font ss:FontName="Leelawadee UI" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#D97706" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#94A3B8"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="10" ss:Color="#0F172A" ss:Bold="1"/>
+   <Interior ss:Color="#E2E8F0" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="CellNormal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#1E293B"/>
+  </Style>
+  <Style ss:ID="CellCenter">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#1E293B"/>
+  </Style>
+  <Style ss:ID="CellNumber">
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#1E293B"/>
+  </Style>
+  <Style ss:ID="CellBold">
+   <Alignment ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#0F172A" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="CellBoldCenter">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#0F172A" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="BadgePassed">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#A7F3D0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#065F46" ss:Bold="1"/>
+   <Interior ss:Color="#D1FAE5" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="BadgeTransferred">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#99F6E4"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#99F6E4"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#99F6E4"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#99F6E4"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#115E59" ss:Bold="1"/>
+   <Interior ss:Color="#CCFBF1" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="BadgeScheduled">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#BAE6FD"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#BAE6FD"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#BAE6FD"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#BAE6FD"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#0369A1" ss:Bold="1"/>
+   <Interior ss:Color="#E0F2FE" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="BadgeFailed">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FECACA"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FECACA"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FECACA"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#FECACA"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#991B1B" ss:Bold="1"/>
+   <Interior ss:Color="#FEE2E2" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="BadgeNotTaken">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#E2E8F0"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#64748B"/>
+   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="KpiLabel">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9" ss:Color="#475569" ss:Bold="1"/>
+   <Interior ss:Color="#F1F5F9" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="KpiValue">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="13" ss:Color="#0284C7" ss:Bold="1"/>
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="KpiValueGreen">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="13" ss:Color="#059669" ss:Bold="1"/>
+   <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="GuideBlock">
+   <Alignment ss:Vertical="Top" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1" ss:Color="#CBD5E1"/>
+   </Borders>
+   <Font ss:FontName="Leelawadee UI" ss:Size="9.5" ss:Color="#334155"/>
+   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
+  </Style>`;
+
+    const makeWorksheet = (name, cols, rows) => {
+      return ` <Worksheet ss:Name="${esc(name)}">
+  <Table>
+   ${cols}
+   ${rows.join('\n   ')}
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>`;
+    };
+
+    const xmlWorkbook = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>STOU Exam Pass</Author>
+  <LastAuthor>STOU Exam Pass</LastAuthor>
+  <Created>${now.toISOString()}</Created>
+  <Company>Sukhothai Thammathirat Open University</Company>
+  <Version>16.00</Version>
+ </DocumentProperties>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>12000</WindowHeight>
+  <WindowWidth>24000</WindowWidth>
+  <WindowTopX>0</WindowTopX>
+  <WindowTopY>0</WindowTopY>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+${stylesXml}
+ </Styles>
+${makeWorksheet('สรุปภาพรวมและสถิติ', s1Cols, s1Rows)}
+${makeWorksheet('ตารางสอบและสนามสอบ', s2Cols, s2Rows)}
+${makeWorksheet('ความคืบหน้าการอ่านหนังสือ', s3Cols, s3Rows)}
+${makeWorksheet('โครงสร้างหลักสูตร 126 นก', s4Cols, s4Rows)}
+${makeWorksheet('แผนการเรียนและวิชาคงเหลือ', s5Cols, s5Rows)}
+</Workbook>`;
+
+    const blob = new Blob([xmlWorkbook], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    const yearTh = new Date().getFullYear() + 543;
-    link.download = `STOU_Curriculum_Report_${student.studentId || '2567'}_${yearTh}.csv`;
+    link.download = `STOU_Academic_Report_5Sheets_${student.studentId || '2567'}_${yearTh}.xls`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    this.showToast('ส่งออกไฟล์รายงานสำเร็จ (เปิดได้ทั้ง Google Sheets และ Excel 100%)', 'gold');
+    this.showToast('ส่งออกไฟล์ Excel สำเร็จ! (5 แผ่นงานครบทุกมิติ: สรุปภาพรวม • ตารางสอบ • บันทึกอ่านหนังสือ • โครงสร้างหลักสูตร • แผนการเรียน)', 'gold');
   },
 
   // ═══════════════════════════════════
