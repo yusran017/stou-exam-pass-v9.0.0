@@ -2551,6 +2551,20 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     ];
   },
 
+  getUnitStatus(u) {
+    if (!u) return 'unread';
+    if (u.status === 'completed' || (!u.status && u.completed === true)) return 'completed';
+    if (u.status === 'reading') return 'reading';
+    return 'unread';
+  },
+
+  getSubUnitStatus(s) {
+    if (!s) return 'unread';
+    if (s.status === 'completed' || (!s.status && s.completed === true)) return 'completed';
+    if (s.status === 'reading') return 'reading';
+    return 'unread';
+  },
+
   renderReadingTracker() {
     const container = document.getElementById('reading-container');
     if (!container) return;
@@ -2562,21 +2576,28 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     const books = this.data?.studyPlan || [];
     let totalUnits = 0;
     let completedUnits = 0;
+    let readingUnits = 0;
     let totalSubUnits = 0;
     let completedSubUnits = 0;
+    let readingSubUnits = 0;
 
     books.forEach(b => {
       const units = b.units || [];
       units.forEach(u => {
         totalUnits++;
-        if (u.completed) completedUnits++;
+        const uStat = this.getUnitStatus(u);
+        if (uStat === 'completed') completedUnits++;
+        if (uStat === 'reading') readingUnits++;
+
         const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
         if (subs.length > 0) {
           totalSubUnits += subs.length;
-          completedSubUnits += subs.filter(s => s.completed).length;
+          completedSubUnits += subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
+          readingSubUnits += subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
         } else {
           totalSubUnits += 1;
-          if (u.completed) completedSubUnits += 1;
+          if (uStat === 'completed') completedSubUnits += 1;
+          if (uStat === 'reading') readingSubUnits += 1;
         }
       });
     });
@@ -2589,7 +2610,9 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
     const statFraction = document.getElementById('reading-stat-fraction');
     if (statFraction) {
-      if (totalSubUnits > totalUnits) {
+      if (readingUnits > 0) {
+        statFraction.textContent = `(อ่านจบ ${completedUnits} • กำลังอ่าน ${readingUnits} / ${totalUnits} หน่วย)`;
+      } else if (totalSubUnits > totalUnits) {
         statFraction.textContent = `(${completedUnits}/${totalUnits} หน่วย • ${completedSubUnits}/${totalSubUnits} ตอน)`;
       } else {
         statFraction.textContent = `(${completedUnits}/${totalUnits} หน่วย)`;
@@ -2604,18 +2627,19 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
     const statComp = document.getElementById('reading-stat-completed-units');
     if (statComp) {
-      statComp.textContent = totalSubUnits > totalUnits
-        ? `${completedUnits} หน่วย (${completedSubUnits} ตอน)`
-        : `${completedUnits} หน่วย`;
+      if (readingUnits > 0) {
+        statComp.textContent = `${completedUnits} หน่วย (กำลังอ่าน ${readingUnits})`;
+      } else {
+        statComp.textContent = totalSubUnits > totalUnits
+          ? `${completedUnits} หน่วย (${completedSubUnits} ตอน)`
+          : `${completedUnits} หน่วย`;
+      }
     }
 
     const statRem = document.getElementById('reading-stat-remaining-units');
     if (statRem) {
       const remUnits = Math.max(0, totalUnits - completedUnits);
-      const remSubs = Math.max(0, totalSubUnits - completedSubUnits);
-      statRem.textContent = totalSubUnits > totalUnits
-        ? `${remUnits} หน่วย (${remSubs} ตอน)`
-        : `${remUnits} หน่วย`;
+      statRem.textContent = `${remUnits} หน่วย`;
     }
 
     if (books.length === 0) {
@@ -2632,27 +2656,33 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
       return;
     }
 
-    // Default expand first book if set is empty
-    if (this.expandedBookCards.size === 0 && books.length > 0) {
+    // Default expand first book ONLY ONCE on initial load
+    if (!this._readingTrackerInitialized && books.length > 0) {
       this.expandedBookCards.add(books[0].courseCode);
+      this._readingTrackerInitialized = true;
     }
 
     let html = '';
     books.forEach(b => {
       const units = b.units || [];
       const bookTotal = units.length;
-      const bookComp = units.filter(u => u.completed).length;
+      const bookComp = units.filter(u => this.getUnitStatus(u) === 'completed').length;
+      const bookReading = units.filter(u => this.getUnitStatus(u) === 'reading').length;
 
       let bookSubsCount = 0;
       let bookSubsDone = 0;
+      let bookSubsReading = 0;
       units.forEach(u => {
         const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
         if (subs.length > 0) {
           bookSubsCount += subs.length;
-          bookSubsDone += subs.filter(s => s.completed).length;
+          bookSubsDone += subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
+          bookSubsReading += subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
         } else {
           bookSubsCount += 1;
-          if (u.completed) bookSubsDone += 1;
+          const uStatus = this.getUnitStatus(u);
+          if (uStatus === 'completed') bookSubsDone += 1;
+          if (uStatus === 'reading') bookSubsReading += 1;
         }
       });
 
@@ -2662,26 +2692,51 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
       let unitsHtml = '';
       units.forEach(u => {
-        const isDone = !!u.completed;
+        const uStatus = this.getUnitStatus(u);
+        const isDone = uStatus === 'completed';
+        const isReading = uStatus === 'reading';
+
         const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
         const hasSubs = subs.length > 0;
-        const subsDoneCount = subs.filter(s => s.completed).length;
+        const subsDoneCount = subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
+        const subsReadingCount = subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
         const isAllSubsDone = hasSubs && subsDoneCount === subs.length;
 
         // Render sub-units HTML
         let subUnitsListHtml = '';
         if (hasSubs) {
           subs.forEach(s => {
-            const subDone = !!s.completed;
+            const sStatus = this.getSubUnitStatus(s);
+            const sDone = sStatus === 'completed';
+            const sReading = sStatus === 'reading';
+
+            let subIconHtml = '';
+            let subAriaLabel = '';
+            let subRowStateClass = '';
+            let subBtnStateClass = '';
+
+            if (sDone) {
+              subRowStateClass = 'is-completed';
+              subBtnStateClass = 'is-checked';
+              subAriaLabel = 'อ่านจบแล้ว (แตะเพื่อรีเซ็ต)';
+              subIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            } else if (sReading) {
+              subRowStateClass = 'is-reading';
+              subBtnStateClass = 'is-reading';
+              subAriaLabel = 'กำลังอ่าน/ทำความเข้าใจ (แตะเพื่อบันทึกว่าอ่านจบแล้ว)';
+              subIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`;
+            } else {
+              subAriaLabel = 'ยังไม่ได้อ่าน (แตะเพื่อเริ่มอ่าน)';
+            }
+
             subUnitsListHtml += `
-              <div class="subunit-row ${subDone ? 'is-completed' : ''}" id="subunit-${b.courseCode}-${u.unit}-${s.id}">
-                <button type="button" class="btn-subunit-check ${subDone ? 'is-checked' : ''}" onclick="App.toggleSubUnitCheck('${b.courseCode}', ${u.unit}, '${s.id}')" aria-label="${subDone ? 'อ่านจบแล้ว (แตะเพื่อยกเลิก)' : 'ยังไม่ได้อ่าน (แตะเพื่อติ๊กจบ)'}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
+              <div class="subunit-row ${subRowStateClass}" id="subunit-${b.courseCode}-${u.unit}-${s.id}">
+                <button type="button" class="btn-subunit-check ${subBtnStateClass}" onclick="App.toggleSubUnitCheck('${b.courseCode}', ${u.unit}, '${s.id}')" aria-label="${subAriaLabel}" title="${subAriaLabel}">
+                  ${subIconHtml}
                 </button>
                 <span class="subunit-id-pill">ตอน ${s.id}</span>
                 <span class="subunit-title-text">${s.title || `ตอนที่ ${s.id}`}</span>
+                ${sReading ? '<span class="subunit-reading-indicator">กำลังอ่าน</span>' : ''}
                 <button type="button" class="btn-del-subunit" onclick="App.deleteSubUnit('${b.courseCode}', ${u.unit}, '${s.id}')" title="ลบตอนย่อย ${s.id}" aria-label="ลบตอนย่อย">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -2699,19 +2754,37 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             </button>
           </div>`;
 
+        let unitIconHtml = '';
+        let unitAriaLabel = '';
+        let unitRowStateClass = '';
+        let unitBtnStateClass = '';
+
+        if (isDone) {
+          unitRowStateClass = 'is-completed';
+          unitBtnStateClass = 'is-checked';
+          unitAriaLabel = 'อ่านจบแล้ว (แตะเพื่อรีเซ็ต)';
+          unitIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        } else if (isReading) {
+          unitRowStateClass = 'is-reading';
+          unitBtnStateClass = 'is-reading';
+          unitAriaLabel = 'กำลังอ่าน/ทำความเข้าใจ (แตะเพื่อบันทึกว่าอ่านจบแล้ว)';
+          unitIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`;
+        } else {
+          unitAriaLabel = 'ยังไม่ได้อ่าน (แตะเพื่อเริ่มอ่าน)';
+        }
+
         unitsHtml += `
           <div class="unit-block-wrap" id="unit-block-${b.courseCode}-${u.unit}">
-            <div class="book-unit-row ${isDone ? 'is-completed' : ''}" id="unit-row-${b.courseCode}-${u.unit}">
-              <button type="button" class="btn-unit-check ${isDone ? 'is-checked' : ''}" onclick="App.toggleUnitCheck('${b.courseCode}', ${u.unit})" aria-label="${isDone ? 'อ่านจบแล้ว (แตะเพื่อยกเลิก)' : 'ยังไม่ได้อ่าน (แตะเพื่อติ๊กจบ)'}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
+            <div class="book-unit-row ${unitRowStateClass}" id="unit-row-${b.courseCode}-${u.unit}">
+              <button type="button" class="btn-unit-check ${unitBtnStateClass}" onclick="App.toggleUnitCheck('${b.courseCode}', ${u.unit})" aria-label="${unitAriaLabel}" title="${unitAriaLabel}">
+                ${unitIconHtml}
               </button>
               <div class="unit-main-col">
                 <div class="unit-meta-row">
                   <span class="unit-num-pill">หน่วยที่ ${String(u.unit).padStart(2, '0')}</span>
-                  ${hasSubs ? `<span class="unit-subcount-pill ${isAllSubsDone ? 'all-done' : ''}">${subsDoneCount}/${subs.length} ตอน</span>` : ''}
+                  ${hasSubs ? `<span class="unit-subcount-pill ${isAllSubsDone ? 'all-done' : (subsReadingCount > 0 ? 'is-reading' : '')}">${subsDoneCount}/${subs.length} ตอน</span>` : ''}
                   ${isDone ? '<span class="unit-done-tag">อ่านจบแล้ว</span>' : ''}
+                  ${isReading ? '<span class="unit-reading-tag">กำลังอ่าน</span>' : ''}
                 </div>
                 <div class="unit-text-name">${u.title || `หน่วยที่ ${u.unit}`}</div>
               </div>
@@ -2732,8 +2805,8 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             </div>
 
             <div class="book-header-right">
-              <span class="book-progress-badge ${isAllDone ? 'is-complete' : ''}">
-                ${isAllDone ? 'จบครบทั้งเล่ม' : `${bookComp}/${bookTotal} หน่วย (${bookPct}%)`}
+              <span class="book-progress-badge ${isAllDone ? 'is-complete' : (bookReading > 0 ? 'is-reading' : '')}">
+                ${isAllDone ? 'จบครบทั้งเล่ม' : (bookReading > 0 ? `${bookComp}/${bookTotal} หน่วย (กำลังอ่าน ${bookReading})` : `${bookComp}/${bookTotal} หน่วย (${bookPct}%)`)}
               </span>
               <button type="button" class="btn-book-expand" aria-label="กาง/หุบรายการบท">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -2770,12 +2843,14 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
   },
 
   toggleBookExpand(code) {
+    const card = document.getElementById(`book-card-${code}`);
     if (this.expandedBookCards.has(code)) {
       this.expandedBookCards.delete(code);
+      if (card) card.classList.remove('is-expanded');
     } else {
       this.expandedBookCards.add(code);
+      if (card) card.classList.add('is-expanded');
     }
-    this.renderReadingTracker();
   },
 
   toggleUnitCheck(courseCode, unitNumber) {
@@ -2786,22 +2861,35 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     const unit = (book.units || []).find(u => u.unit === unitNumber);
     if (!unit) return;
 
-    const hasSubs = Array.isArray(unit.subUnits) && unit.subUnits.length > 0;
-
-    if (hasSubs) {
-      const targetState = !unit.completed;
-      unit.completed = targetState;
-      unit.subUnits.forEach(s => { s.completed = targetState; });
+    // Tri-state cycle: unread -> reading -> completed -> unread
+    const currentStatus = this.getUnitStatus(unit);
+    let nextStatus = 'reading';
+    if (currentStatus === 'unread') {
+      nextStatus = 'reading';
+    } else if (currentStatus === 'reading') {
+      nextStatus = 'completed';
     } else {
-      unit.completed = !unit.completed;
+      nextStatus = 'unread';
+    }
+
+    unit.status = nextStatus;
+    unit.completed = (nextStatus === 'completed');
+
+    if (Array.isArray(unit.subUnits) && unit.subUnits.length > 0) {
+      unit.subUnits.forEach(s => {
+        s.status = nextStatus;
+        s.completed = (nextStatus === 'completed');
+      });
     }
 
     this.saveDataAndRefresh();
 
-    if (unit.completed) {
-      this.showToast(`อ่านจบแล้ว! วิชา ${courseCode} หน่วยที่ ${unitNumber} ${hasSubs ? '(ครบทุกตอนย่อย)' : ''}`, 'gold');
+    if (nextStatus === 'reading') {
+      this.showToast(`กำลังอ่าน: วิชา ${courseCode} หน่วยที่ ${unitNumber} (กำลังทำความเข้าใจ)`, 'gold');
+    } else if (nextStatus === 'completed') {
+      this.showToast(`อ่านจบแล้ว! วิชา ${courseCode} หน่วยที่ ${unitNumber}`, 'gold');
     } else {
-      this.showToast(`ปรับสถานะ วิชา ${courseCode} หน่วยที่ ${unitNumber} เป็นยังไม่อ่าน`);
+      this.showToast(`ปรับสถานะ หน่วยที่ ${unitNumber} เป็นยังไม่อ่าน`);
     }
   },
 
@@ -2816,14 +2904,40 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     const sub = unit.subUnits.find(s => String(s.id) === String(subUnitId));
     if (!sub) return;
 
-    sub.completed = !sub.completed;
+    // Tri-state cycle: unread -> reading -> completed -> unread
+    const currentStatus = this.getSubUnitStatus(sub);
+    let nextStatus = 'reading';
+    if (currentStatus === 'unread') {
+      nextStatus = 'reading';
+    } else if (currentStatus === 'reading') {
+      nextStatus = 'completed';
+    } else {
+      nextStatus = 'unread';
+    }
 
-    // Auto-update parent unit completed status
-    unit.completed = unit.subUnits.length > 0 && unit.subUnits.every(s => s.completed);
+    sub.status = nextStatus;
+    sub.completed = (nextStatus === 'completed');
+
+    // Auto-update parent unit status
+    const allCompleted = unit.subUnits.length > 0 && unit.subUnits.every(s => this.getSubUnitStatus(s) === 'completed');
+    const allUnread = unit.subUnits.every(s => this.getSubUnitStatus(s) === 'unread');
+
+    if (allCompleted) {
+      unit.status = 'completed';
+      unit.completed = true;
+    } else if (allUnread) {
+      unit.status = 'unread';
+      unit.completed = false;
+    } else {
+      unit.status = 'reading';
+      unit.completed = false;
+    }
 
     this.saveDataAndRefresh();
 
-    if (sub.completed) {
+    if (nextStatus === 'reading') {
+      this.showToast(`กำลังอ่าน: ตอน ${sub.id} (กำลังทำความเข้าใจ)`, 'gold');
+    } else if (nextStatus === 'completed') {
       this.showToast(`อ่านจบแล้ว! ตอน ${sub.id}: ${sub.title || ''}`, 'gold');
     } else {
       this.showToast(`ปรับสถานะ ตอน ${sub.id} เป็นยังไม่อ่าน`);
