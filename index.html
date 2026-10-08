@@ -32,11 +32,6 @@
         <div>
           <div class="aqua-brand-heading-row">
             <h1 class="aqua-brand-title">STOU Exam Pass</h1>
-            <button type="button" class="aqua-circle-sync-btn" id="btn-open-sync-hub" title="ศูนย์ซิงค์และสำรองข้อมูล (Export / Import / Reset)" aria-label="ศูนย์ซิงค์และสำรองข้อมูล">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
-                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
-              </svg>
-            </button>
           </div>
           <p class="aqua-brand-subtitle">ตารางสอบ • ความคืบหน้าการอ่าน • แผนหลักสูตร มสธ.</p>
         </div>
@@ -49,11 +44,12 @@
           <span>ติดตั้งแอป</span>
         </button>
 
-        <!-- Theme Toggle (Light / Dark Aero Glass) -->
-        <button type="button" class="aqua-icon-gel-btn" id="btn-toggle-theme" title="สลับโหมดมืด / สว่าง" aria-label="สลับธีม">
-          <span id="theme-icon-container">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          </span>
+        <!-- Settings & Data Hub Gear Button (แทนที่ปุ่ม theme เดิม) -->
+        <button type="button" class="aqua-icon-gel-btn btn-settings-gear" id="btn-open-settings-hub" title="การตั้งค่าและจัดการข้อมูล (Settings & Hub)" aria-label="การตั้งค่าและจัดการข้อมูล">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
         </button>
       </div>
     </div>
@@ -103,20 +99,11 @@
       <!-- Compact Aqua Reading Summary Box -->
       <div class="aqua-summary-card reading-summary-card">
         <div class="summary-card-header">
-          <div>
+          <div class="summary-title-group">
             <span class="summary-badge-label">การเตรียมตัวสอบ มสธ.</span>
             <h3 class="summary-degree-title">ความคืบหน้าการอ่านหนังสือ</h3>
           </div>
           <div class="summary-header-actions">
-            <!-- Icon-only Round Action Buttons (No text, pure circular SVG) -->
-            <!-- Toggle Sample Book 1 เล่ม (ปุ่มกลมเล็กไอคอนตัวอย่าง) -->
-            <button type="button" class="btn-icon-round btn-icon-sample" id="btn-toggle-reading-sample" title="สลับเปิด/ปิด ตัวอย่างหนังสือ (1 เล่ม 15 หน่วย)" aria-label="ตัวอย่างหนังสือ 1 เล่ม">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-            </button>
-            <!-- Reset Progress (ปุ่มกลมเล็กไอคอนรีเซ็ต) -->
-            <button type="button" class="btn-icon-round btn-icon-reset" id="btn-reset-reading-progress" title="รีเซ็ตความคืบหน้าการอ่านทั้งหมด" aria-label="รีเซ็ตความคืบหน้า">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
-            </button>
             <!-- Add New Book / Subject (ปุ่มกลมเล็กไอคอนบวก) -->
             <button type="button" class="btn-icon-round btn-icon-add-book" id="btn-open-add-book-modal" title="เพิ่มวิชา / เล่มหนังสือที่จะอ่าน" aria-label="เพิ่มหนังสือ">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -170,26 +157,13 @@
       <!-- Compact Aqua Curriculum Summary Box (Properly Sized & Clean) -->
       <div class="aqua-summary-card">
         <div class="summary-card-header">
-          <div>
+          <div class="summary-title-group">
             <span class="summary-badge-label">โครงสร้างหลักสูตร มสธ.</span>
             <h3 class="summary-degree-title">ความก้าวหน้าการศึกษา</h3>
           </div>
-          <div class="summary-header-actions">
-            <!-- Icon-only round action buttons -->
-            <button type="button" class="btn-icon-round btn-icon-excel" id="btn-export-excel" title="ส่งออกรายงาน Excel (5 แผ่นงานครบทุกมิติ)" aria-label="ส่งออก Excel Multi-Sheet">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13l5 6"></path><path d="M14 13l-5 6"></path></svg>
-            </button>
-            <button type="button" class="btn-icon-round btn-icon-json-down" id="btn-export-json" title="ดาวน์โหลดไฟล์ .json" aria-label="ดาวน์โหลดไฟล์ JSON">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            </button>
-            <button type="button" class="btn-icon-round btn-icon-json-up" id="btn-import-json" title="อัปโหลดไฟล์ .json" aria-label="อัปโหลดไฟล์ JSON">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            </button>
-            <input type="file" id="inp-import-json" accept=".json,application/json" style="display:none;">
-            <div class="summary-total-pill">
-              <span class="summary-total-num" id="stat-total-passed-credits">0</span>
-              <span class="summary-total-text">/ 126 หน่วยกิต</span>
-            </div>
+          <div class="summary-total-pill curriculum-total-pill" id="curriculum-credits-badge">
+            <span class="summary-total-num" id="stat-total-passed-credits">0</span>
+            <span class="summary-total-text">/ 126 หน่วยกิต</span>
           </div>
         </div>
 
@@ -538,16 +512,65 @@
   </div>
 
   <!-- ═════════════════════════════════════════════════ -->
-  <!-- MODAL: ศูนย์ซิงค์และย้ายข้อมูล (Sync & Transfer Hub) -->
+  <!-- MODAL: เพิ่มเรื่องในตอนย่อย (Topic Add Modal)       -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <div class="aqua-modal-backdrop" id="topic-add-modal" style="display:none;">
+    <div class="aqua-modal-window" style="max-width: 440px;">
+      <div class="aqua-window-titlebar aero-modal-header">
+        <div class="aero-modal-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"></path></svg>
+          <span class="aqua-window-title" id="modal-topic-heading">เพิ่มเรื่องในตอนย่อย</span>
+        </div>
+        <button type="button" class="aero-modal-close-btn" id="btn-close-topic-modal" aria-label="ปิดหน้าต่าง">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="aqua-modal-body">
+        <form id="form-topic-add" onsubmit="event.preventDefault();">
+          <div class="aqua-modal-scroll">
+            <div class="aqua-course-banner" style="margin-bottom: 14px;">
+              <span class="banner-code-pill" id="modal-topic-course-code">10151</span>
+              <span class="banner-course-title" id="modal-topic-subunit-title">ตอนที่ 1.1</span>
+            </div>
+
+            <div class="aqua-form-grid" style="grid-template-columns: 1fr;">
+              <div class="aqua-field">
+                <label class="aqua-label">ลำดับเรื่อง (เช่น 1.1.1 หรือ 1.1.2)</label>
+                <input type="text" class="aqua-input" id="inp-topic-id" placeholder="เช่น 1.1.1" required>
+              </div>
+
+              <div class="aqua-field">
+                <label class="aqua-label">ชื่อเรื่อง / ประเด็นเนื้อหา</label>
+                <input type="text" class="aqua-input" id="inp-topic-title" placeholder="เช่น เรื่องที่ 1.1.1: ความหมายและที่มา" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="aqua-modal-actions">
+            <button type="button" class="aqua-btn-secondary" id="btn-cancel-topic-modal">ยกเลิก</button>
+            <button type="button" class="aqua-btn-primary-gel" id="btn-save-topic-modal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>เพิ่มเรื่อง</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- MODAL: การตั้งค่าและจัดการข้อมูล (Settings & Data Hub) -->
   <!-- ═════════════════════════════════════════════════ -->
   <div class="aqua-modal-backdrop" id="sync-backup-modal" style="display:none;">
     <div class="aqua-modal-window" style="max-width: 480px;">
       <div class="aqua-window-titlebar aero-modal-header">
         <div class="aero-modal-title-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-          <span class="aqua-window-title">ศูนย์ซิงค์และย้ายข้อมูลข้ามเครื่อง</span>
+          <span class="aqua-window-title">การตั้งค่าและจัดการข้อมูล</span>
         </div>
         <button type="button" class="aero-modal-close-btn" id="btn-close-sync-modal" aria-label="ปิดหน้าต่าง">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -557,6 +580,27 @@
       <div class="aqua-modal-body">
         <div class="aqua-modal-scroll">
           
+          <!-- Section 1: ธีมการแสดงผล (Theme & Mode Toggle) -->
+          <div class="sync-section-block">
+            <div class="settings-theme-row">
+              <div class="settings-theme-info">
+                <h4 class="sync-section-title" style="margin-bottom: 2px;">
+                  <span id="theme-status-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                  </span>
+                  <span>ธีมการแสดงผล</span>
+                </h4>
+                <p class="sync-section-desc" id="current-theme-desc" style="margin:0;">โหมดมืด (Dark Aero Glass)</p>
+              </div>
+              <button type="button" class="aqua-btn-gel" id="btn-toggle-theme" style="padding: 7px 14px; gap: 8px;">
+                <span id="theme-icon-container">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </span>
+                <span id="theme-text-label">สลับเป็นโหมดสว่าง</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Sync / Storage Status Card -->
           <div class="sync-status-card">
             <div class="sync-status-icon-wrap">
@@ -564,41 +608,37 @@
             </div>
             <div class="sync-status-info">
               <div class="sync-status-heading">บันทึกอัตโนมัติบนอุปกรณ์นี้แล้ว</div>
-              <div class="sync-status-sub" id="sync-status-summary">ข้อมูลปลอดภัย พร้อมใช้งาน</div>
+              <div class="sync-status-sub" id="sync-status-summary">ข้อมูลปลอดภัย พร้อมใช้งานออฟไลน์ 100%</div>
             </div>
           </div>
 
-          <div style="text-align:center; margin: 4px 0 12px 0;">
-            <p style="font-size:0.86rem; font-weight:700; color:var(--text-main); margin:0;">ต้องการดาวน์โหลด หรืออัปโหลดข้อมูล?</p>
-            <p style="font-size:0.72rem; color:var(--text-muted); margin:2px 0 0 0;">เลือกดำเนินการเพื่อย้ายข้อมูลไปใช้บนมือถือ/คอมพิวเตอร์เครื่องอื่น</p>
-          </div>
-
-          <!-- Section 1: ดาวน์โหลดข้อมูล (Download .json) -->
+          <!-- Section 2: ส่งออกข้อมูลและรายงาน (Export) -->
           <div class="sync-section-block">
             <h4 class="sync-section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>1. ดาวน์โหลดไฟล์ข้อมูล (.json)</span>
+              <span>ส่งออกรายงานและสำรองข้อมูล (Export)</span>
             </h4>
-            <p class="sync-section-desc">บันทึกข้อมูลทั้งหมด (ตารางสอบ, บันทึกการอ่าน 15 หน่วย, โครงสร้างหลักสูตร) ลงเครื่องเพื่อนำไปอัปโหลดในเครื่องอื่น หรือเก็บสำรองไว้</p>
-            <button type="button" class="aqua-btn-gel" id="btn-sync-export-json" style="width:100%; justify-content:center;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>ดาวน์โหลดไฟล์ .json เก็บไว้</span>
-            </button>
-            <button type="button" class="aqua-btn-gel" id="btn-sync-export-excel" style="width:100%; justify-content:center; margin-top:8px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.3)); border-color: rgba(52, 211, 153, 0.4); color: #a7f3d0;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13l5 6"></path><path d="M14 13l-5 6"></path></svg>
-              <span>ส่งออกรายงาน Excel (5 แผ่นงานครบทุกมิติ)</span>
-            </button>
+            <p class="sync-section-desc">บันทึกข้อมูลออกเป็นรายงาน Excel หรือไฟล์สำรอง .json เพื่อดูข้อมูลเชิงลึกหรือย้ายเครื่อง</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button type="button" class="aqua-btn-gel" id="btn-sync-export-excel" style="width:100%; justify-content:center; background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35)); border-color: rgba(52, 211, 153, 0.5); color: #a7f3d0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13l5 6"></path><path d="M14 13l-5 6"></path></svg>
+                <span>ส่งออกรายงาน Excel (5 แผ่นงานครบทุกมิติ)</span>
+              </button>
+              <button type="button" class="aqua-btn-gel" id="btn-sync-export-json" style="width:100%; justify-content:center;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>ดาวน์โหลดไฟล์สำรอง .json</span>
+              </button>
+            </div>
           </div>
 
-          <!-- Section 2: อัปโหลดข้อมูล (Upload .json) -->
+          <!-- Section 3: อัปโหลดและนำเข้าข้อมูล (Import) -->
           <div class="sync-section-block">
             <h4 class="sync-section-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              <span>2. อัปโหลดไฟล์ข้อมูล (.json) เพื่อซิงค์กับเครื่องนี้</span>
+              <span>นำเข้าและซิงค์ข้อมูล (Import .json)</span>
             </h4>
             <p class="sync-section-desc">เลือกไฟล์ .json ที่มีอยู่ เพื่อดึงข้อมูลเดิมกลับมา หรือซิงค์ข้อมูลมาจากอุปกรณ์อื่น</p>
 
-            <!-- Mode selector radio buttons -->
             <div class="sync-mode-selector">
               <label class="sync-mode-radio">
                 <input type="radio" name="sync-import-mode" value="merge" id="sync-mode-merge" checked>
@@ -626,17 +666,28 @@
             </div>
           </div>
 
-          <!-- Section 3: รีเซ็ตหลักสูตรเดิมเพื่อเตรียมขึ้นสาขาใหม่ -->
+          <!-- Section 4: การจัดการและรีเซ็ตข้อมูล (Data Reset) -->
           <div class="sync-section-block sync-danger-block">
             <h4 class="sync-section-title text-danger">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>3. รีเซ็ตโครงสร้างหลักสูตร (Reset Curriculum)</span>
+              <span>การจัดการและรีเซ็ตข้อมูล (Data Reset)</span>
             </h4>
-            <p class="sync-section-desc">ต้องการเปลี่ยนสาขาวิชาหรือไม่? สามารถกดล้างรายวิชาในหลักสูตรเดิมทั้งหมดให้เป็น 0 เพื่อเตรียมเพิ่มหรือนำเข้ารายวิชาของสาขาใหม่ได้</p>
-            <button type="button" class="aqua-btn-danger-outline" id="btn-sync-reset-curriculum">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              <span>ล้างรายวิชาในหลักสูตรทั้งหมด</span>
-            </button>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div>
+                <p class="sync-section-desc" style="margin-bottom:6px;">ต้องการเริ่มอ่านหนังสือใหม่ทั้งหมดหรือไม่? ล้างสถานะการอ่านทุกหน่วยให้เป็นยังไม่อ่าน</p>
+                <button type="button" class="aqua-btn-danger-outline" id="btn-sync-reset-reading" style="width:100%; justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                  <span>รีเซ็ตความคืบหน้าการอ่านทั้งหมด</span>
+                </button>
+              </div>
+              <div style="margin-top:4px; padding-top:8px; border-top:1px dashed rgba(239, 68, 68, 0.25);">
+                <p class="sync-section-desc" style="margin-bottom:6px;">ต้องการเปลี่ยนสาขาวิชาหรือไม่? สามารถกดล้างรายวิชาในหลักสูตรเดิมทั้งหมดให้เป็น 0 เพื่อเตรียมเพิ่มหรือนำเข้ารายวิชาของสาขาใหม่</p>
+                <button type="button" class="aqua-btn-danger-outline" id="btn-sync-reset-curriculum" style="width:100%; justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  <span>ล้างรายวิชาในหลักสูตรทั้งหมด</span>
+                </button>
+              </div>
+            </div>
           </div>
 
         </div>

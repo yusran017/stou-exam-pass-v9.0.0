@@ -18,6 +18,7 @@ const App = {
   activeDropdownCode: null,
   countdownInterval: null,
   currentSubUnitTarget: { courseCode: null, unitNumber: null },
+  currentTopicTarget: { courseCode: null, unitNumber: null, subUnitId: null },
 
   init() {
     this.setupTheme();
@@ -107,11 +108,30 @@ const App = {
   },
 
   updateThemeIcon(theme) {
+    const isLight = theme === 'aqua-light';
     const c = document.getElementById('theme-icon-container');
-    if (!c) return;
-    c.innerHTML = theme === 'aqua-light'
-      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
-      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    if (c) {
+      c.innerHTML = isLight
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    }
+
+    const textLabel = document.getElementById('theme-text-label');
+    if (textLabel) {
+      textLabel.textContent = isLight ? 'สลับเป็นโหมดมืด' : 'สลับเป็นโหมดสว่าง';
+    }
+
+    const descLabel = document.getElementById('current-theme-desc');
+    if (descLabel) {
+      descLabel.textContent = isLight ? 'โหมดสว่าง (Aqua Light)' : 'โหมดมืด (Dark Aero Glass)';
+    }
+
+    const statusIcon = document.getElementById('theme-status-icon');
+    if (statusIcon) {
+      statusIcon.innerHTML = isLight
+        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
+        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+    }
   },
 
   // ═══════════════════════════════════
@@ -200,6 +220,7 @@ const App = {
     });
     document.body.classList.remove('modal-open');
     this.currentSubUnitTarget = { courseCode: null, unitNumber: null };
+    this.currentTopicTarget = { courseCode: null, unitNumber: null, subUnitId: null };
   },
 
   closeAllDropdowns() {
@@ -1403,6 +1424,7 @@ const App = {
 
   setupSyncHub() {
     document.getElementById('btn-open-sync-hub')?.addEventListener('click', () => this.openSyncModal());
+    document.getElementById('btn-open-settings-hub')?.addEventListener('click', () => this.openSyncModal());
     document.getElementById('btn-close-sync-modal')?.addEventListener('click', () => this.closeSyncModal());
     document.getElementById('btn-cancel-sync-modal')?.addEventListener('click', () => this.closeSyncModal());
 
@@ -1423,6 +1445,11 @@ const App = {
         this.closeSyncModal();
       }
       e.target.value = '';
+    });
+
+    document.getElementById('btn-sync-reset-reading')?.addEventListener('click', () => {
+      this.resetReadingProgress();
+      this.closeSyncModal();
     });
 
     document.getElementById('btn-sync-reset-curriculum')?.addEventListener('click', () => {
@@ -1481,8 +1508,9 @@ const App = {
         'หากต้องการเปลี่ยนสาขาวิชา/ล้างวิชาสาขาเดิม ให้ใส่ "replaceCurriculum": true หรือ "mode": "replace" ใน JSON เพื่อแทนที่โครงสร้างหลักสูตรเดิมทั้งหมดด้วยวิชาในไฟล์นี้',
         'curriculum[] = รายวิชาในโครงสร้างหลักสูตร (courseCode, courseNameTh, credits, category, status)',
         'courses[] = ตารางสอบ ใช้กับวิชาที่ status เป็น will_take / will_take_samrit / will_take_summer / will_take_retake',
-        'studyPlan[] = แผนการอ่านหนังสือของแต่ละวิชา (courseCode, courseNameTh, bookTitle, totalUnits, units: [{ unit, title, completed, subUnits: [{ id, title, completed }] }])',
-        'subUnits[] = ตอนย่อย/หัวข้อย่อยในแต่ละหน่วย สามารถเพิ่ม/แก้ไขได้ในไฟล์ JSON เช่น id: "1.1", title: "...", completed: true/false',
+        'studyPlan[] = แผนการอ่านหนังสือของแต่ละวิชา (courseCode, courseNameTh, bookTitle, totalUnits, units: [{ unit, title, completed, subUnits: [{ id, title, completed, topics: [{ id, title, completed, status }] }] }])',
+        'subUnits[] = ตอนย่อยในแต่ละหน่วย เช่น id: "1.1", title: "...", topics: [...]',
+        'topics[] = เรื่องย่อยในแต่ละตอน เช่น id: "1.1.1", title: "...", completed: true/false, status: "unread"|"reading"|"completed"',
         'examDate รูปแบบ YYYY-MM-DD (ค.ศ.), startTime/endTime รูปแบบ HH:MM 24 ชม.',
         'examDateTh, examTimeTh, examSession, examTypeName, examFormatName ไม่ต้องใส่ แอปจะคำนวณให้เอง',
         'ถ้า examFormat เป็น online ไม่ต้องใส่ examRoom, seatNumber, examRow'
@@ -1492,7 +1520,8 @@ const App = {
         'courses[].examType': ['regular', 'samrit', 'summer', 'retake'],
         'courses[].examFormat': ['onsite', 'online'],
         'studyPlan[].units[].completed': [true, false],
-        'studyPlan[].units[].subUnits[].completed': [true, false]
+        'studyPlan[].units[].subUnits[].completed': [true, false],
+        'studyPlan[].units[].subUnits[].topics[].completed': [true, false]
       },
       statusMeaning: {
         not_taken: 'ยังไม่ลงทะเบียน',
@@ -2386,6 +2415,11 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     document.getElementById('btn-close-subunit-modal')?.addEventListener('click', () => this.closeSubUnitModal());
     document.getElementById('btn-cancel-subunit-modal')?.addEventListener('click', () => this.closeSubUnitModal());
     document.getElementById('btn-save-subunit-modal')?.addEventListener('click', () => this.saveNewSubUnit());
+
+    // Topic modal event handlers
+    document.getElementById('btn-close-topic-modal')?.addEventListener('click', () => this.closeTopicModal());
+    document.getElementById('btn-cancel-topic-modal')?.addEventListener('click', () => this.closeTopicModal());
+    document.getElementById('btn-save-topic-modal')?.addEventListener('click', () => this.saveNewTopic());
   },
 
   getSampleStudyPlan() {
@@ -2401,8 +2435,24 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             title: "ความรู้ทั่วไปเกี่ยวกับไทยศึกษา",
             completed: true,
             subUnits: [
-              { id: "1.1", title: "ความหมายและขอบข่ายของไทยศึกษา", completed: true },
-              { id: "1.2", title: "แนวคิดและทฤษฎีในการศึกษาไทย", completed: true },
+              {
+                id: "1.1",
+                title: "ความหมายและขอบข่ายของไทยศึกษา",
+                completed: true,
+                topics: [
+                  { id: "1.1.1", title: "ความหมายและเป้าหมายของไทยศึกษา", completed: true, status: "completed" },
+                  { id: "1.1.2", title: "ขอบข่ายและประเด็นสำคัญในไทยศึกษา", completed: true, status: "completed" }
+                ]
+              },
+              {
+                id: "1.2",
+                title: "แนวคิดและทฤษฎีในการศึกษาไทย",
+                completed: true,
+                topics: [
+                  { id: "1.2.1", title: "แนวคิดเชิงโครงสร้างหน้าที่และพัฒนาการ", completed: true, status: "completed" },
+                  { id: "1.2.2", title: "ทฤษฎีการเปลี่ยนแปลงทางสังคมและวัฒนธรรม", completed: true, status: "completed" }
+                ]
+              },
               { id: "1.3", title: "ระเบียบวิธีและแหล่งข้อมูลไทยศึกษา", completed: true }
             ]
           },
@@ -2411,7 +2461,15 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             title: "สิ่งแวดล้อมทางกายภาพกับวิถีชีวิตไทย",
             completed: true,
             subUnits: [
-              { id: "2.1", title: "สภาพแวดล้อมทางภูมิศาสตร์ของไทย", completed: true },
+              {
+                id: "2.1",
+                title: "สภาพแวดล้อมทางภูมิศาสตร์ของไทย",
+                completed: true,
+                topics: [
+                  { id: "2.1.1", title: "ลักษณะภูมิประเทศและภูมิอากาศในแต่ละภาค", completed: true, status: "completed" },
+                  { id: "2.1.2", title: "อิทธิพลของภูมิศาสตร์ต่อการตั้งถิ่นฐาน", completed: true, status: "completed" }
+                ]
+              },
               { id: "2.2", title: "ทรัพยากรธรรมชาติกับวิถีชีวิตคนไทย", completed: true },
               { id: "2.3", title: "นิเวศวัฒนธรรมและการปรับตัว", completed: true }
             ]
@@ -2551,17 +2609,40 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     ];
   },
 
-  getUnitStatus(u) {
-    if (!u) return 'unread';
-    if (u.status === 'completed' || (!u.status && u.completed === true)) return 'completed';
-    if (u.status === 'reading') return 'reading';
+  getTopicStatus(t) {
+    if (!t) return 'unread';
+    if (t.status === 'completed' || (!t.status && t.completed === true)) return 'completed';
+    if (t.status === 'reading') return 'reading';
     return 'unread';
   },
 
   getSubUnitStatus(s) {
     if (!s) return 'unread';
+    const topics = Array.isArray(s.topics) ? s.topics : [];
+    if (topics.length > 0) {
+      const doneCount = topics.filter(t => this.getTopicStatus(t) === 'completed').length;
+      if (doneCount === topics.length) return 'completed';
+      const readingCount = topics.filter(t => this.getTopicStatus(t) === 'reading').length;
+      if (doneCount > 0 || readingCount > 0) return 'reading';
+      return 'unread';
+    }
     if (s.status === 'completed' || (!s.status && s.completed === true)) return 'completed';
     if (s.status === 'reading') return 'reading';
+    return 'unread';
+  },
+
+  getUnitStatus(u) {
+    if (!u) return 'unread';
+    const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
+    if (subs.length > 0) {
+      const doneCount = subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
+      if (doneCount === subs.length) return 'completed';
+      const readingCount = subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
+      if (doneCount > 0 || readingCount > 0) return 'reading';
+      return 'unread';
+    }
+    if (u.status === 'completed' || (!u.status && u.completed === true)) return 'completed';
+    if (u.status === 'reading') return 'reading';
     return 'unread';
   },
 
@@ -2591,9 +2672,19 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
         const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
         if (subs.length > 0) {
-          totalSubUnits += subs.length;
-          completedSubUnits += subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
-          readingSubUnits += subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
+          subs.forEach(s => {
+            const topics = Array.isArray(s.topics) ? s.topics : [];
+            if (topics.length > 0) {
+              totalSubUnits += topics.length;
+              completedSubUnits += topics.filter(t => this.getTopicStatus(t) === 'completed').length;
+              readingSubUnits += topics.filter(t => this.getTopicStatus(t) === 'reading').length;
+            } else {
+              totalSubUnits += 1;
+              const sStat = this.getSubUnitStatus(s);
+              if (sStat === 'completed') completedSubUnits += 1;
+              if (sStat === 'reading') readingSubUnits += 1;
+            }
+          });
         } else {
           totalSubUnits += 1;
           if (uStat === 'completed') completedSubUnits += 1;
@@ -2675,9 +2766,19 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
       units.forEach(u => {
         const subs = Array.isArray(u.subUnits) ? u.subUnits : [];
         if (subs.length > 0) {
-          bookSubsCount += subs.length;
-          bookSubsDone += subs.filter(s => this.getSubUnitStatus(s) === 'completed').length;
-          bookSubsReading += subs.filter(s => this.getSubUnitStatus(s) === 'reading').length;
+          subs.forEach(s => {
+            const topics = Array.isArray(s.topics) ? s.topics : [];
+            if (topics.length > 0) {
+              bookSubsCount += topics.length;
+              bookSubsDone += topics.filter(t => this.getTopicStatus(t) === 'completed').length;
+              bookSubsReading += topics.filter(t => this.getTopicStatus(t) === 'reading').length;
+            } else {
+              bookSubsCount += 1;
+              const sStat = this.getSubUnitStatus(s);
+              if (sStat === 'completed') bookSubsDone += 1;
+              if (sStat === 'reading') bookSubsReading += 1;
+            }
+          });
         } else {
           bookSubsCount += 1;
           const uStatus = this.getUnitStatus(u);
@@ -2729,17 +2830,79 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
               subAriaLabel = 'ยังไม่ได้อ่าน (แตะเพื่อเริ่มอ่าน)';
             }
 
+            // Topics list
+            const topics = Array.isArray(s.topics) ? s.topics : [];
+            const hasTopics = topics.length > 0;
+            const topicsDoneCount = topics.filter(t => this.getTopicStatus(t) === 'completed').length;
+
+            let topicsListHtml = '';
+            if (hasTopics) {
+              topics.forEach(t => {
+                const tStatus = this.getTopicStatus(t);
+                const tDone = tStatus === 'completed';
+                const tReading = tStatus === 'reading';
+
+                let topicIconHtml = '';
+                let topicAriaLabel = '';
+                let topicRowStateClass = '';
+                let topicBtnStateClass = '';
+
+                if (tDone) {
+                  topicRowStateClass = 'is-completed';
+                  topicBtnStateClass = 'is-checked';
+                  topicAriaLabel = 'อ่านจบแล้ว (แตะเพื่อรีเซ็ต)';
+                  topicIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                } else if (tReading) {
+                  topicRowStateClass = 'is-reading';
+                  topicBtnStateClass = 'is-reading';
+                  topicAriaLabel = 'กำลังอ่าน/ทำความเข้าใจ (แตะเพื่อบันทึกว่าอ่านจบแล้ว)';
+                  topicIconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`;
+                } else {
+                  topicAriaLabel = 'ยังไม่ได้อ่าน (แตะเพื่อเริ่มอ่าน)';
+                }
+
+                topicsListHtml += `
+                  <div class="topic-row ${topicRowStateClass}" id="topic-${b.courseCode}-${u.unit}-${s.id}-${t.id}">
+                    <button type="button" class="btn-topic-check ${topicBtnStateClass}" onclick="App.toggleTopicCheck('${b.courseCode}', ${u.unit}, '${s.id}', '${t.id}')" aria-label="${topicAriaLabel}" title="${topicAriaLabel}">
+                      ${topicIconHtml}
+                    </button>
+                    <span class="topic-id-pill">เรื่อง ${t.id}</span>
+                    <span class="topic-title-text">${t.title || `เรื่องที่ ${t.id}`}</span>
+                    ${tReading ? '<span class="topic-reading-indicator">กำลังอ่าน</span>' : ''}
+                    <button type="button" class="btn-del-topic" onclick="App.deleteTopic('${b.courseCode}', ${u.unit}, '${s.id}', '${t.id}')" title="ลบเรื่อง ${t.id}" aria-label="ลบเรื่อง">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </div>`;
+              });
+            }
+
+            const topicsBoxHtml = hasTopics ? `
+              <div class="subunit-topics-box">
+                ${topicsListHtml}
+                <button type="button" class="btn-add-topic-inline" onclick="event.stopPropagation(); App.openAddTopicModal('${b.courseCode}', ${u.unit}, '${s.id}');" title="เพิ่มเรื่องในตอนที่ ${s.id}">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ เพิ่มเรื่อง</span>
+                </button>
+              </div>` : '';
+
             subUnitsListHtml += `
-              <div class="subunit-row ${subRowStateClass}" id="subunit-${b.courseCode}-${u.unit}-${s.id}">
-                <button type="button" class="btn-subunit-check ${subBtnStateClass}" onclick="App.toggleSubUnitCheck('${b.courseCode}', ${u.unit}, '${s.id}')" aria-label="${subAriaLabel}" title="${subAriaLabel}">
-                  ${subIconHtml}
-                </button>
-                <span class="subunit-id-pill">ตอน ${s.id}</span>
-                <span class="subunit-title-text">${s.title || `ตอนที่ ${s.id}`}</span>
-                ${sReading ? '<span class="subunit-reading-indicator">กำลังอ่าน</span>' : ''}
-                <button type="button" class="btn-del-subunit" onclick="App.deleteSubUnit('${b.courseCode}', ${u.unit}, '${s.id}')" title="ลบตอนย่อย ${s.id}" aria-label="ลบตอนย่อย">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
+              <div class="subunit-wrapper">
+                <div class="subunit-row ${subRowStateClass}" id="subunit-${b.courseCode}-${u.unit}-${s.id}">
+                  <button type="button" class="btn-subunit-check ${subBtnStateClass}" onclick="App.toggleSubUnitCheck('${b.courseCode}', ${u.unit}, '${s.id}')" aria-label="${subAriaLabel}" title="${subAriaLabel}">
+                    ${subIconHtml}
+                  </button>
+                  <span class="subunit-id-pill">ตอน ${s.id}</span>
+                  <span class="subunit-title-text">${s.title || `ตอนที่ ${s.id}`}</span>
+                  ${hasTopics ? `<span class="unit-subcount-pill ${topicsDoneCount === topics.length ? 'all-done' : ''}" style="font-size:0.65rem; padding: 1px 6px;">${topicsDoneCount}/${topics.length} เรื่อง</span>` : ''}
+                  ${sReading && !hasTopics ? '<span class="subunit-reading-indicator">กำลังอ่าน</span>' : ''}
+                  <button type="button" class="btn-add-topic-mini" onclick="event.stopPropagation(); App.openAddTopicModal('${b.courseCode}', ${u.unit}, '${s.id}');" title="เพิ่มเรื่องในตอนที่ ${s.id}">
+                    + เรื่อง
+                  </button>
+                  <button type="button" class="btn-del-subunit" onclick="App.deleteSubUnit('${b.courseCode}', ${u.unit}, '${s.id}')" title="ลบตอนย่อย ${s.id}" aria-label="ลบตอนย่อย">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                ${topicsBoxHtml}
               </div>`;
           });
         }
@@ -2879,6 +3042,12 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
       unit.subUnits.forEach(s => {
         s.status = nextStatus;
         s.completed = (nextStatus === 'completed');
+        if (Array.isArray(s.topics)) {
+          s.topics.forEach(t => {
+            t.status = nextStatus;
+            t.completed = (nextStatus === 'completed');
+          });
+        }
       });
     }
 
@@ -2918,6 +3087,14 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     sub.status = nextStatus;
     sub.completed = (nextStatus === 'completed');
 
+    // Cascade down to child topics
+    if (Array.isArray(sub.topics)) {
+      sub.topics.forEach(t => {
+        t.status = nextStatus;
+        t.completed = (nextStatus === 'completed');
+      });
+    }
+
     // Auto-update parent unit status
     const allCompleted = unit.subUnits.length > 0 && unit.subUnits.every(s => this.getSubUnitStatus(s) === 'completed');
     const allUnread = unit.subUnits.every(s => this.getSubUnitStatus(s) === 'unread');
@@ -2941,6 +3118,55 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
       this.showToast(`อ่านจบแล้ว! ตอน ${sub.id}: ${sub.title || ''}`, 'gold');
     } else {
       this.showToast(`ปรับสถานะ ตอน ${sub.id} เป็นยังไม่อ่าน`);
+    }
+  },
+
+  toggleTopicCheck(courseCode, unitNumber, subUnitId, topicId) {
+    if (!this.data?.studyPlan) return;
+    const book = this.data.studyPlan.find(b => b.courseCode === courseCode);
+    if (!book) return;
+
+    const unit = (book.units || []).find(u => u.unit === unitNumber);
+    if (!unit || !Array.isArray(unit.subUnits)) return;
+
+    const sub = unit.subUnits.find(s => String(s.id) === String(subUnitId));
+    if (!sub || !Array.isArray(sub.topics)) return;
+
+    const topic = sub.topics.find(t => String(t.id) === String(topicId));
+    if (!topic) return;
+
+    // Tri-state cycle: unread -> reading -> completed -> unread
+    const currentStatus = this.getTopicStatus(topic);
+    let nextStatus = 'reading';
+    if (currentStatus === 'unread') {
+      nextStatus = 'reading';
+    } else if (currentStatus === 'reading') {
+      nextStatus = 'completed';
+    } else {
+      nextStatus = 'unread';
+    }
+
+    topic.status = nextStatus;
+    topic.completed = (nextStatus === 'completed');
+
+    // Propagate up to parent subunit
+    const subStatus = this.getSubUnitStatus(sub);
+    sub.status = subStatus;
+    sub.completed = (subStatus === 'completed');
+
+    // Propagate up to parent unit
+    const unitStatus = this.getUnitStatus(unit);
+    unit.status = unitStatus;
+    unit.completed = (unitStatus === 'completed');
+
+    this.saveDataAndRefresh();
+
+    if (nextStatus === 'reading') {
+      this.showToast(`กำลังอ่าน: เรื่อง ${topic.id} (กำลังทำความเข้าใจ)`, 'gold');
+    } else if (nextStatus === 'completed') {
+      this.showToast(`อ่านจบแล้ว! เรื่อง ${topic.id}: ${topic.title || ''}`, 'gold');
+    } else {
+      this.showToast(`ปรับสถานะ เรื่อง ${topic.id} เป็นยังไม่อ่าน`);
     }
   },
 
@@ -3041,12 +3267,137 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     if (!confirm(`ต้องการลบตอนย่อย ${subUnitId} หรือไม่?`)) return;
 
     unit.subUnits = unit.subUnits.filter(s => String(s.id) !== String(subUnitId));
-    if (unit.subUnits.length > 0) {
-      unit.completed = unit.subUnits.every(s => s.completed);
-    }
+    const unitStatus = this.getUnitStatus(unit);
+    unit.status = unitStatus;
+    unit.completed = (unitStatus === 'completed');
 
     this.saveDataAndRefresh();
     this.showToast(`ลบตอนย่อย ${subUnitId} แล้ว`);
+  },
+
+  openAddTopicModal(courseCode, unitNumber, subUnitId) {
+    this.currentTopicTarget = { courseCode, unitNumber, subUnitId };
+    const book = this.data?.studyPlan?.find(b => b.courseCode === courseCode);
+    const unit = (book?.units || []).find(u => u.unit === unitNumber);
+    const sub = (unit?.subUnits || []).find(s => String(s.id) === String(subUnitId));
+
+    const heading = document.getElementById('modal-topic-heading');
+    if (heading) heading.textContent = `เพิ่มเรื่องในตอนที่ ${subUnitId}`;
+
+    const codePill = document.getElementById('modal-topic-course-code');
+    if (codePill) codePill.textContent = courseCode;
+
+    const subTitle = document.getElementById('modal-topic-subunit-title');
+    if (subTitle) subTitle.textContent = sub?.title ? `ตอน ${subUnitId}: ${sub.title}` : `ตอนที่ ${subUnitId}`;
+
+    const inpId = document.getElementById('inp-topic-id');
+    const existingTopics = Array.isArray(sub?.topics) ? sub.topics : [];
+    const nextTopicNum = existingTopics.length + 1;
+    if (inpId) inpId.value = `${subUnitId}.${nextTopicNum}`;
+
+    const inpTitle = document.getElementById('inp-topic-title');
+    if (inpTitle) {
+      inpTitle.value = '';
+      setTimeout(() => inpTitle.focus(), 100);
+    }
+
+    const modal = document.getElementById('topic-add-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.classList.add('modal-open');
+    }
+  },
+
+  closeTopicModal() {
+    const modal = document.getElementById('topic-add-modal');
+    if (modal) {
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    }
+    this.currentTopicTarget = { courseCode: null, unitNumber: null, subUnitId: null };
+  },
+
+  saveNewTopic() {
+    const { courseCode, unitNumber, subUnitId } = this.currentTopicTarget;
+    if (!courseCode || unitNumber === null || !subUnitId) return;
+
+    const inpId = document.getElementById('inp-topic-id');
+    const inpTitle = document.getElementById('inp-topic-title');
+
+    const topicId = inpId?.value.trim();
+    const topicTitle = inpTitle?.value.trim();
+
+    if (!topicId || !topicTitle) {
+      this.showToast('กรุณาระบุลำดับเรื่องและชื่อเรื่อง', 'error');
+      return;
+    }
+
+    const book = this.data?.studyPlan?.find(b => b.courseCode === courseCode);
+    if (!book) return;
+
+    const unit = (book.units || []).find(u => u.unit === unitNumber);
+    if (!unit || !Array.isArray(unit.subUnits)) return;
+
+    const sub = unit.subUnits.find(s => String(s.id) === String(subUnitId));
+    if (!sub) return;
+
+    if (!Array.isArray(sub.topics)) {
+      sub.topics = [];
+    }
+
+    // Check duplicate ID
+    if (sub.topics.some(t => String(t.id) === topicId)) {
+      this.showToast(`เรื่องที่ ${topicId} มีอยู่แล้วในตอนนี้`, 'error');
+      return;
+    }
+
+    sub.topics.push({
+      id: topicId,
+      title: topicTitle,
+      completed: false,
+      status: 'unread'
+    });
+
+    // Update parent subunit & unit statuses
+    const subStatus = this.getSubUnitStatus(sub);
+    sub.status = subStatus;
+    sub.completed = (subStatus === 'completed');
+
+    const unitStatus = this.getUnitStatus(unit);
+    unit.status = unitStatus;
+    unit.completed = (unitStatus === 'completed');
+
+    this.closeTopicModal();
+    this.saveDataAndRefresh();
+    this.showToast(`เพิ่มเรื่อง ${topicId} ในตอนที่ ${subUnitId} สำเร็จ`, 'gold');
+  },
+
+  deleteTopic(courseCode, unitNumber, subUnitId, topicId) {
+    if (!this.data?.studyPlan) return;
+    const book = this.data.studyPlan.find(b => b.courseCode === courseCode);
+    if (!book) return;
+
+    const unit = (book.units || []).find(u => u.unit === unitNumber);
+    if (!unit || !Array.isArray(unit.subUnits)) return;
+
+    const sub = unit.subUnits.find(s => String(s.id) === String(subUnitId));
+    if (!sub || !Array.isArray(sub.topics)) return;
+
+    if (!confirm(`ต้องการลบเรื่อง ${topicId} หรือไม่?`)) return;
+
+    sub.topics = sub.topics.filter(t => String(t.id) !== String(topicId));
+
+    // Update parent status
+    const subStatus = this.getSubUnitStatus(sub);
+    sub.status = subStatus;
+    sub.completed = (subStatus === 'completed');
+
+    const unitStatus = this.getUnitStatus(unit);
+    unit.status = unitStatus;
+    unit.completed = (unitStatus === 'completed');
+
+    this.saveDataAndRefresh();
+    this.showToast(`ลบเรื่อง ${topicId} แล้ว`);
   },
 
   toggleAllUnitsInBook(courseCode) {
@@ -3056,11 +3407,22 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
     const allCompleted = book.units.every(u => u.completed);
     const targetState = !allCompleted;
+    const targetStatus = targetState ? 'completed' : 'unread';
 
     book.units.forEach(u => {
       u.completed = targetState;
+      u.status = targetStatus;
       if (Array.isArray(u.subUnits)) {
-        u.subUnits.forEach(s => { s.completed = targetState; });
+        u.subUnits.forEach(s => { 
+          s.completed = targetState;
+          s.status = targetStatus;
+          if (Array.isArray(s.topics)) {
+            s.topics.forEach(t => {
+              t.completed = targetState;
+              t.status = targetStatus;
+            });
+          }
+        });
       }
     });
 
@@ -3138,8 +3500,18 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     this.data.studyPlan.forEach(b => {
       (b.units || []).forEach(u => {
         u.completed = false;
+        u.status = 'unread';
         if (Array.isArray(u.subUnits)) {
-          u.subUnits.forEach(s => { s.completed = false; });
+          u.subUnits.forEach(s => { 
+            s.completed = false; 
+            s.status = 'unread';
+            if (Array.isArray(s.topics)) {
+              s.topics.forEach(t => {
+                t.completed = false;
+                t.status = 'unread';
+              });
+            }
+          });
         }
       });
     });
