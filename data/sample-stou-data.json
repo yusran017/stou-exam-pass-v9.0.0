@@ -1,0 +1,422 @@
+{
+  "student": {
+    "studentId": "6630018899",
+    "name": "นายสมชาย ใจดีมุ่งมั่น",
+    "degree": "ปริญญาตรี",
+    "faculty": "สาขาวิชาวิทยาศาสตร์และเทคโนโลยี",
+    "major": "วิทยาการคอมพิวเตอร์และสารสนเทศ",
+    "center": "ศูนย์วิทยพัฒนา มสธ. นนทบุรี",
+    "semester": "1",
+    "academicYear": "2567"
+  },
+  "examCenter": {
+    "centerName": "โรงเรียนเบญจมราชูทิศ",
+    "province": "นนทบุรี",
+    "locationAddress": "ถนนประชาราษฎร์ ตำบลสวนใหญ่ อำเภอเมือง จังหวัดนนทบุรี",
+    "googleMapsQuery": "โรงเรียนเบญจมราชูทิศ นนทบุรี"
+  },
+  "courses": [
+    {
+      "courseCode": "10151",
+      "courseNameTh": "ไทยศึกษา",
+      "credits": 6,
+      "examType": "regular",
+      "examTypeName": "สอบไล่ประจำภาคปกติ",
+      "examFormat": "onsite",
+      "examFormatName": "สนามสอบ",
+      "examDate": "2026-11-21",
+      "examDateTh": "วันเสาร์ที่ 21 พฤศจิกายน 2569",
+      "examSession": "morning",
+      "examTimeTh": "คาบเช้า 09:00 - 12:00 น.",
+      "examRoom": "อาคาร 3 ห้อง 324",
+      "seatNumber": "042",
+      "examRow": "4",
+      "examVenue": "โรงเรียนเบญจมราชูทิศ"
+    },
+    {
+      "courseCode": "96414",
+      "courseNameTh": "การโปรแกรมคอมพิวเตอร์",
+      "credits": 6,
+      "examType": "samrit",
+      "examTypeName": "โครงการสัมฤทธิบัตร",
+      "examFormat": "online",
+      "examFormatName": "สอบออนไลน์",
+      "examDate": "2026-11-21",
+      "examDateTh": "วันเสาร์ที่ 21 พฤศจิกายน 2569",
+      "examSession": "afternoon",
+      "examTimeTh": "คาบบ่าย 13:30 - 16:30 น.",
+      "examRoom": "",
+      "seatNumber": "",
+      "examRow": "",
+      "examVenue": "สอบออนไลน์ มสธ."
+    },
+    {
+      "courseCode": "96408",
+      "courseNameTh": "การจัดการระบบฐานข้อมูล",
+      "credits": 6,
+      "examType": "retake",
+      "examTypeName": "การสอบซ่อม (Make-up)",
+      "examFormat": "onsite",
+      "examFormatName": "สนามสอบ",
+      "examDate": "2026-11-22",
+      "examDateTh": "วันอาทิตย์ที่ 22 พฤศจิกายน 2569",
+      "examSession": "morning",
+      "examTimeTh": "คาบเช้า 09:00 - 12:00 น.",
+      "examRoom": "อาคาร 2 ห้อง 201",
+      "seatNumber": "018",
+      "examRow": "2",
+      "examVenue": "โรงเรียนเบญจมราชูทิศ"
+    }
+  ],
+  "curriculum": [
+    {
+      "courseCode": "10103",
+      "courseNameTh": "ทักษะชีวิต",
+      "credits": 6,
+      "category": "หมวดวิชาศึกษาทั่วไป กลุ่มวิชาบังคับ (5 ชุดวิชา)",
+      "status": "passed"
+    },
+    {
+      "courseCode": "10111",
+      "courseNameTh": "ภาษาอังกฤษเพื่อการสื่อสาร",
+      "credits": 6,
+      "category": "หมวดวิชาศึกษาทั่วไป กลุ่มวิชาบังคับ (5 ชุดวิชา)",
+      "status": "passed"
+    },
+    {
+      "courseCode": "10131",
+      "courseNameTh": "สังคมมนุษย์",
+      "credits": 6,
+      "category": "หมวดวิชาศึกษาทั่วไป กลุ่มวิชาบังคับ (5 ชุดวิชา)",
+      "status": "transferred"
+    },
+    {
+      "courseCode": "10141",
+      "courseNameTh": "วิทยาศาสตร์ เทคโนโลยีและสิ่งแวดล้อมเพื่อชีวิต",
+      "credits": 6,
+      "category": "หมวดวิชาศึกษาทั่วไป กลุ่มวิชาบังคับ (5 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "10151",
+      "courseNameTh": "ไทยศึกษา",
+      "credits": 6,
+      "category": "หมวดวิชาศึกษาทั่วไป กลุ่มวิชาบังคับ (5 ชุดวิชา)",
+      "status": "will_take"
+    },
+    {
+      "courseCode": "96304",
+      "courseNameTh": "การสื่อสารข้อมูลและระบบเครือข่ายคอมพิวเตอร์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "failed"
+    },
+    {
+      "courseCode": "96407",
+      "courseNameTh": "การพัฒนาระบบสารสนเทศ",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "96408",
+      "courseNameTh": "การจัดการระบบฐานข้อมูล",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "will_take_retake"
+    },
+    {
+      "courseCode": "96414",
+      "courseNameTh": "การโปรแกรมคอมพิวเตอร์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "will_take_samrit"
+    },
+    {
+      "courseCode": "99202",
+      "courseNameTh": "การวิเคราะห์ข้อมูล",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99313",
+      "courseNameTh": "การสื่อสารไร้สายและเครือข่าย",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99315",
+      "courseNameTh": "สถาปัตยกรรมคอมพิวเตอร์และระบบปฏิบัติการ",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99409",
+      "courseNameTh": "ประสบการณ์วิชาชีพเทคโนโลยีสารสนเทศและการสื่อสาร",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99410",
+      "courseNameTh": "การจัดการและการออกแบบระบบโทรคมนาคม",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99412",
+      "courseNameTh": "หลักการและการบริหารเครือข่าย",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99419",
+      "courseNameTh": "ความมั่นคงปลอดภัยไซเบอร์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (11 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "96102",
+      "courseNameTh": "คณิตศาสตร์และสถิติสำหรับวิทยาศาสตร์และเทคโนโลยี",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (2 ชุดวิชา)",
+      "status": "passed"
+    },
+    {
+      "courseCode": "99203",
+      "courseNameTh": "คณิตศาสตร์สำหรับวิทยาการคอมพิวเตอร์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "96411",
+      "courseNameTh": "ระบบสารสนเทศและการจัดการความรู้",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "96412",
+      "courseNameTh": "การบริหารโครงการด้านเทคโนโลยีสารสนเทศ",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99201",
+      "courseNameTh": "วิทยาศาสตร์สำหรับเทคโนโลยีสารสนเทศและการสื่อสาร",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99301",
+      "courseNameTh": "เทคโนโลยีการบริการผ่านเว็บและการประยุกต์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99314",
+      "courseNameTh": "โครงสร้างข้อมูลและขั้นตอนวิธี",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99321",
+      "courseNameTh": "การประยุกต์เทคโนโลยีสารสนเทศและการสื่อสารสำหรับผู้สูงอายุ",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99402",
+      "courseNameTh": "การจัดการความมั่นคงปลอดภัยในระบบคอมพิวเตอร์",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99414",
+      "courseNameTh": "เทคโนโลยีมัลติมีเดีย",
+      "credits": 6,
+      "category": "หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)",
+      "status": "not_taken"
+    },
+    {
+      "courseCode": "99999",
+      "courseNameTh": "หมวดวิชาเลือกเสรี (เลือกชุดวิชาใดก็ได้ของ มสธ.)",
+      "credits": 6,
+      "category": "หมวดวิชาเลือกเสรี (1 ชุดวิชา)",
+      "status": "not_taken"
+    }
+  ],
+  "studyPlan": [
+    {
+      "courseCode": "10151",
+      "courseNameTh": "ไทยศึกษา",
+      "bookTitle": "เอกสารการสอนชุดวิชาไทยศึกษา (15 หน่วย)",
+      "totalUnits": 15,
+      "units": [
+        {
+          "unit": 1,
+          "title": "ความรู้ทั่วไปเกี่ยวกับไทยศึกษา",
+          "completed": true,
+          "subUnits": [
+            { "id": "1.1", "title": "ความหมายและขอบข่ายของไทยศึกษา", "completed": true },
+            { "id": "1.2", "title": "แนวคิดและทฤษฎีในการศึกษาไทย", "completed": true },
+            { "id": "1.3", "title": "ระเบียบวิธีและแหล่งข้อมูลไทยศึกษา", "completed": true }
+          ]
+        },
+        {
+          "unit": 2,
+          "title": "สิ่งแวดล้อมทางกายภาพกับวิถีชีวิตไทย",
+          "completed": true,
+          "subUnits": [
+            { "id": "2.1", "title": "สภาพแวดล้อมทางภูมิศาสตร์ของไทย", "completed": true },
+            { "id": "2.2", "title": "ทรัพยากรธรรมชาติกับวิถีชีวิตคนไทย", "completed": true },
+            { "id": "2.3", "title": "นิเวศวัฒนธรรมและการปรับตัว", "completed": true }
+          ]
+        },
+        {
+          "unit": 3,
+          "title": "ระบบสังคมและสถาบันทางสังคมไทย",
+          "completed": true,
+          "subUnits": [
+            { "id": "3.1", "title": "โครงสร้างและความสัมพันธ์ทางสังคมไทย", "completed": true },
+            { "id": "3.2", "title": "ครอบครัว เครือญาติ และชุมชนไทย", "completed": true },
+            { "id": "3.3", "title": "การจัดระเบียบและการเปลี่ยนแปลงทางสังคม", "completed": true }
+          ]
+        },
+        {
+          "unit": 4,
+          "title": "ระบบเศรษฐกิจไทย",
+          "completed": true,
+          "subUnits": [
+            { "id": "4.1", "title": "วิวัฒนาการและโครงสร้างเศรษฐกิจไทย", "completed": true },
+            { "id": "4.2", "title": "ภาคเกษตรกรรม อุตสาหกรรม และบริการ", "completed": true },
+            { "id": "4.3", "title": "ปรัชญาเศรษฐกิจพอเพียงกับการพัฒนา", "completed": true }
+          ]
+        },
+        {
+          "unit": 5,
+          "title": "การเมืองการปกครองไทย",
+          "completed": true,
+          "subUnits": [
+            { "id": "5.1", "title": "พัฒนาการทางการเมืองการปกครองไทย", "completed": true },
+            { "id": "5.2", "title": "สถาบันการเมืองและรัฐธรรมนูญไทย", "completed": true },
+            { "id": "5.3", "title": "การมีส่วนร่วมทางการเมืองของประชาชน", "completed": true }
+          ]
+        },
+        {
+          "unit": 6,
+          "title": "กฎหมายและกระบวนการยุติธรรมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "6.1", "title": "ประวัติศาสตร์และวิวัฒนาการกฎหมายไทย", "completed": false },
+            { "id": "6.2", "title": "กฎหมายที่เกี่ยวข้องกับชีวิตประจำวัน", "completed": false },
+            { "id": "6.3", "title": "ระบบและองค์กรในกระบวนการยุติธรรมไทย", "completed": false }
+          ]
+        },
+        {
+          "unit": 7,
+          "title": "ศาสนาและความเชื่อในสังคมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "7.1", "title": "พระพุทธศาสนากับสังคมไทย", "completed": false },
+            { "id": "7.2", "title": "ศาสนาพราหมณ์-ฮินดู ศาสนาอิสลาม คริสต์", "completed": false },
+            { "id": "7.3", "title": "ความเชื่อพื้นบ้านและพิธีกรรมในสังคมไทย", "completed": false }
+          ]
+        },
+        {
+          "unit": 8,
+          "title": "ภาษาและวรรณกรรมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "8.1", "title": "ลักษณะและวิวัฒนาการของภาษาไทย", "completed": false },
+            { "id": "8.2", "title": "วรรณกรรมไทยสมัยโบราณถึงรัตนโกสินทร์", "completed": false },
+            { "id": "8.3", "title": "วรรณกรรมร่วมสมัยและวรรณกรรมท้องถิ่น", "completed": false }
+          ]
+        },
+        {
+          "unit": 9,
+          "title": "ศิลปวัฒนธรรมและประเพณีไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "9.1", "title": "ทัศนศิลป์ สถาปัตยกรรม และประติมากรรมไทย", "completed": false },
+            { "id": "9.2", "title": "ดนตรี นาฏศิลป์ และการละเล่นพื้นบ้าน", "completed": false },
+            { "id": "9.3", "title": "ประเพณีและเทศกาลสำคัญของไทย", "completed": false }
+          ]
+        },
+        {
+          "unit": 10,
+          "title": "วิทยาศาสตร์ เทคโนโลยี และภูมิปัญญาไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "10.1", "title": "ภูมิปัญญาพื้นบ้านและการแพทย์แผนไทย", "completed": false },
+            { "id": "10.2", "title": "การพัฒนาวิทยาศาสตร์และเทคโนโลยีในไทย", "completed": false },
+            { "id": "10.3", "title": "การประยุกต์ภูมิปัญญากับเทคโนโลยีสมัยใหม่", "completed": false }
+          ]
+        },
+        {
+          "unit": 11,
+          "title": "การเปลี่ยนแปลงทางสังคมและวัฒนธรรมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "11.1", "title": "ปัจจัยที่ทำให้เกิดการเปลี่ยนแปลงทางสังคม", "completed": false },
+            { "id": "11.2", "title": "กระแสโลกาภิวัตน์กับวัฒนธรรมไทย", "completed": false },
+            { "id": "11.3", "title": "การปรับตัวและการอนุรักษ์เอกลักษณ์ไทย", "completed": false }
+          ]
+        },
+        {
+          "unit": 12,
+          "title": "ปัญหาและแนวทางการพัฒนาสังคมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "12.1", "title": "ปัญหาสังคม ความยากจน และความเหลื่อมล้ำ", "completed": false },
+            { "id": "12.2", "title": "ปัญหาสิ่งแวดล้อมและคุณภาพชีวิต", "completed": false },
+            { "id": "12.3", "title": "ยุทธศาสตร์และแนวทางการพัฒนาที่ยั่งยืน", "completed": false }
+          ]
+        },
+        {
+          "unit": 13,
+          "title": "ไทยกับประชาคมระหว่างประเทศ",
+          "completed": false,
+          "subUnits": [
+            { "id": "13.1", "title": "ความสัมพันธ์ระหว่างประเทศของไทยในอดีต", "completed": false },
+            { "id": "13.2", "title": "บทบาทของไทยในประชาคมอาเซียน (ASEAN)", "completed": false },
+            { "id": "13.3", "title": "ไทยในเวทีการเมืองและเศรษฐกิจโลก", "completed": false }
+          ]
+        },
+        {
+          "unit": 14,
+          "title": "สื่อสารมวลชนกับการพัฒนาสังคมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "14.1", "title": "วิวัฒนาการสื่อสารมวลชนไทย", "completed": false },
+            { "id": "14.2", "title": "สื่อดิจิทัลและสังคมออนไลน์ในยุคปัจจุบัน", "completed": false },
+            { "id": "14.3", "title": "การรู้เท่าทันสื่อและจริยธรรมสื่อมวลชน", "completed": false }
+          ]
+        },
+        {
+          "unit": 15,
+          "title": "แนวโน้มและอนาคตของสังคมไทย",
+          "completed": false,
+          "subUnits": [
+            { "id": "15.1", "title": "การเปลี่ยนแปลงโครงสร้างประชากรผู้สูงวัย", "completed": false },
+            { "id": "15.2", "title": "การเตรียมความพร้อมต่อการเปลี่ยนแปลงในอนาคต", "completed": false },
+            { "id": "15.3", "title": "ภาพอนาคตและวิสัยทัศน์การพัฒนาสังคมไทย", "completed": false }
+          ]
+        }
+      ]
+    }
+  ]
+}

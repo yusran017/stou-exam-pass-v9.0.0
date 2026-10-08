@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="aqua-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>STOU Exam Pass - Liquid & Aero Glass Edition</title>
+  <meta name="description" content="แอปพลิเคชันตารางสอบและโครงสร้างหลักสูตร มสธ. สไตล์ Liquid & Aero Glass พร้อมระบบนับถอยหลัง ปรับเวลาสอบยืดหยุ่น และส่งออกรายงาน Excel หลาย Sheet ใช้งานออฟไลน์ PWA 100%">
+
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="STOU Exam">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+
+  <!-- Liquid & Aero Stylesheet -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- Aero Glass Header Bar                             -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <header class="aqua-header aero-header-bar">
+    <div class="aqua-header-inner">
+      <div class="aqua-brand">
+        <div class="aero-brand-icon-wrap">
+          <img src="./icons/icon.svg" alt="STOU Icon" class="aqua-brand-icon">
+        </div>
+        <div>
+          <div class="aqua-brand-heading-row">
+            <h1 class="aqua-brand-title">STOU Exam Pass</h1>
+            <button type="button" class="aqua-circle-sync-btn" id="btn-open-sync-hub" title="ศูนย์ซิงค์และสำรองข้อมูล (Export / Import / Reset)" aria-label="ศูนย์ซิงค์และสำรองข้อมูล">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="aqua-brand-subtitle">ตารางสอบ • ความคืบหน้าการอ่าน • แผนหลักสูตร มสธ.</p>
+        </div>
+      </div>
+
+      <div class="aqua-header-controls">
+        <!-- PWA Install Button (Aero Gel Style) -->
+        <button type="button" class="aqua-btn-gel aqua-btn-install" id="btn-install-pwa" style="display:none;" title="ติดตั้งแอปบนมือถือ">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>ติดตั้งแอป</span>
+        </button>
+
+        <!-- Theme Toggle (Light / Dark Aero Glass) -->
+        <button type="button" class="aqua-icon-gel-btn" id="btn-toggle-theme" title="สลับโหมดมืด / สว่าง" aria-label="สลับธีม">
+          <span id="theme-icon-container">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- Main Application Body                             -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <main class="aqua-main-container">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TAB 1: ตารางสอบ (Exam Schedule - Click to Reveal Details) -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="pane-home" class="tab-pane active">
+
+      <!-- Section Title Header -->
+      <div class="aqua-section-bar">
+        <div class="section-title-wrap">
+          <svg class="section-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <h2 class="aqua-section-title">วิชาที่กำลังจะสอบ</h2>
+        </div>
+        <span class="aqua-count-gel-badge" id="exam-count-badge">0 วิชา</span>
+      </div>
+
+      <!-- Upcoming Exam Countdown Widget (Liquid Glass & Aero Ticker) -->
+      <div id="upcoming-exam-countdown" class="upcoming-countdown-widget">
+        <!-- Rendered dynamically by app.js with live seconds ticker -->
+      </div>
+
+      <!-- Quick Hint -->
+      <p class="aqua-tab-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        แตะที่รายวิชาเพื่อดูรายละเอียด วันที่สอบ เวลา สนามสอบ และห้องสอบ
+      </p>
+
+      <!-- Exam Cards List Container (Click to expand details) -->
+      <div id="exam-list-container" class="aqua-exam-list">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TAB 2: อ่านหนังสือ (Reading & Chapter Progress Tracker) -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="pane-reading" class="tab-pane">
+
+      <!-- Compact Aqua Reading Summary Box -->
+      <div class="aqua-summary-card reading-summary-card">
+        <div class="summary-card-header">
+          <div>
+            <span class="summary-badge-label">การเตรียมตัวสอบ มสธ.</span>
+            <h3 class="summary-degree-title">ความคืบหน้าการอ่านหนังสือ</h3>
+          </div>
+          <div class="summary-header-actions">
+            <!-- Icon-only Round Action Buttons (No text, pure circular SVG) -->
+            <!-- Toggle Sample Book 1 เล่ม (ปุ่มกลมเล็กไอคอนตัวอย่าง) -->
+            <button type="button" class="btn-icon-round btn-icon-sample" id="btn-toggle-reading-sample" title="สลับเปิด/ปิด ตัวอย่างหนังสือ (1 เล่ม 15 หน่วย)" aria-label="ตัวอย่างหนังสือ 1 เล่ม">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            </button>
+            <!-- Reset Progress (ปุ่มกลมเล็กไอคอนรีเซ็ต) -->
+            <button type="button" class="btn-icon-round btn-icon-reset" id="btn-reset-reading-progress" title="รีเซ็ตความคืบหน้าการอ่านทั้งหมด" aria-label="รีเซ็ตความคืบหน้า">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+            </button>
+            <!-- Add New Book / Subject (ปุ่มกลมเล็กไอคอนบวก) -->
+            <button type="button" class="btn-icon-round btn-icon-add-book" id="btn-open-add-book-modal" title="เพิ่มวิชา / เล่มหนังสือที่จะอ่าน" aria-label="เพิ่มหนังสือ">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <div class="summary-total-pill reading-total-pill">
+              <span class="summary-total-num" id="reading-stat-percent">0%</span>
+              <span class="summary-total-text" id="reading-stat-fraction">(0/0 หน่วย)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aqua Glossy Progress Bar -->
+        <div class="aqua-progress-track">
+          <div class="aqua-progress-fill reading-progress-fill" id="reading-progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <!-- Compact Reading Stats Grid -->
+        <div class="reading-stats-grid">
+          <div class="reading-stat-item">
+            <span class="reading-stat-label">วิชาในรายการ</span>
+            <strong class="reading-stat-val" id="reading-stat-total-books">0 เล่ม</strong>
+          </div>
+          <div class="reading-stat-item">
+            <span class="reading-stat-label">อ่านจบแล้ว</span>
+            <strong class="reading-stat-val val-green" id="reading-stat-completed-units">0 หน่วย</strong>
+          </div>
+          <div class="reading-stat-item">
+            <span class="reading-stat-label">ยังไม่ได้อ่าน</span>
+            <strong class="reading-stat-val val-amber" id="reading-stat-remaining-units">0 หน่วย</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Hint -->
+      <p class="aqua-tab-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        แตะที่ชื่อวิชาเพื่อกางบทย่อย และแตะปุ่มวงกลมเพื่อติ๊กถูกเมื่ออ่านจบแต่ละหน่วย • อัปเดตผ่าน .json ได้
+      </p>
+
+      <!-- Reading Books List Container -->
+      <div id="reading-container" class="aqua-reading-list">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TAB 2: โครงสร้างหลักสูตร (Locked 126 Credits)   -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <section id="pane-curriculum" class="tab-pane">
+
+      <!-- Compact Aqua Curriculum Summary Box (Properly Sized & Clean) -->
+      <div class="aqua-summary-card">
+        <div class="summary-card-header">
+          <div>
+            <span class="summary-badge-label">โครงสร้างหลักสูตร มสธ.</span>
+            <h3 class="summary-degree-title">ความก้าวหน้าการศึกษา</h3>
+          </div>
+          <div class="summary-header-actions">
+            <!-- Icon-only round action buttons -->
+            <button type="button" class="btn-icon-round btn-icon-excel" id="btn-export-excel" title="ส่งออก Excel" aria-label="ส่งออก Excel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M9 13l5 6"></path><path d="M14 13l-5 6"></path></svg>
+            </button>
+            <button type="button" class="btn-icon-round btn-icon-json-down" id="btn-export-json" title="ดาวน์โหลดไฟล์ .json" aria-label="ดาวน์โหลดไฟล์ JSON">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button type="button" class="btn-icon-round btn-icon-json-up" id="btn-import-json" title="อัปโหลดไฟล์ .json" aria-label="อัปโหลดไฟล์ JSON">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </button>
+            <input type="file" id="inp-import-json" accept=".json,application/json" style="display:none;">
+            <div class="summary-total-pill">
+              <span class="summary-total-num" id="stat-total-passed-credits">0</span>
+              <span class="summary-total-text">/ 126 หน่วยกิต</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aqua Glossy Progress Bar -->
+        <div class="aqua-progress-track">
+          <div class="aqua-progress-fill" id="curriculum-progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <!-- Compact Category Grid (Full word 'หน่วยกิต', balanced size) -->
+        <div class="aqua-cat-grid">
+          <div class="aqua-cat-item">
+            <span class="cat-item-name">หมวดวิชาศึกษาทั่วไป</span>
+            <strong class="cat-item-credits" id="cat-stat-gen">0 / 30 หน่วยกิต</strong>
+          </div>
+          <div class="aqua-cat-item">
+            <span class="cat-item-name">หมวดวิชาเฉพาะ (บังคับ)</span>
+            <strong class="cat-item-credits" id="cat-stat-core">0 / 78 หน่วยกิต</strong>
+          </div>
+          <div class="aqua-cat-item">
+            <span class="cat-item-name">หมวดวิชาเฉพาะ (เลือก)</span>
+            <strong class="cat-item-credits" id="cat-stat-major-elec">0 / 12 หน่วยกิต</strong>
+          </div>
+          <div class="aqua-cat-item">
+            <span class="cat-item-name">หมวดวิชาเลือกเสรี</span>
+            <strong class="cat-item-credits" id="cat-stat-free">0 / 6 หน่วยกิต</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filters (Clean SVG Icons, No Emoji) -->
+  <!-- Title & Description updated for Liquid Glass Multi-Color Edition -->
+      <div class="aqua-controls-bar">
+        <div class="aqua-search-wrap">
+          <svg class="search-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="curriculum-search" class="aqua-search-input" placeholder="ค้นหารหัสวิชา หรือชื่อวิชา..." aria-label="ค้นหารหัสวิชาหรือชื่อวิชา">
+        </div>
+        <div class="aqua-filter-buttons" id="curriculum-filters">
+          <button type="button" class="aqua-filter-btn active" data-filter="all">ทั้งหมด</button>
+          <button type="button" class="aqua-filter-btn filter-pill-scheduled" data-filter="scheduled">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+            จะสอบทั้งหมด (<span id="count-scheduled">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-passed" data-filter="passed">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            ผ่านแล้ว (<span id="count-passed">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-regular" data-filter="will_take">
+            ภาคปกติ (<span id="count-will-take">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-samrit" data-filter="will_take_samrit">
+            สัมฤทธิบัตร (<span id="count-samrit">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-summer" data-filter="will_take_summer">
+            ภาคฤดูร้อน (<span id="count-summer">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-retake" data-filter="will_take_retake">
+            สอบซ่อม (<span id="count-retake">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-failed" data-filter="failed">
+            ไม่ผ่าน/รอซ่อม (<span id="count-failed">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn filter-pill-transferred" data-filter="transferred">
+            เทียบโอน (<span id="count-transferred">0</span>)
+          </button>
+          <button type="button" class="aqua-filter-btn" data-filter="not_taken">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            ยังไม่ลง (<span id="count-not-taken">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Curriculum Course Groups Container -->
+      <div id="curriculum-container" class="aqua-curriculum-groups">
+        <!-- Rendered dynamically by app.js with SVG icons -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- Apple Mac OS X Aqua Dock Navigation Bar (3 Halves/Thirds) -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <nav class="aqua-bottom-dock" id="app-bottom-nav" aria-label="แถบเมนูหลัก">
+    <button type="button" class="aqua-dock-item dock-exam active" data-target="pane-home" id="tab-btn-home">
+      <!-- Modern exam icon: Calendar with clock badge -->
+      <svg class="dock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+        <circle cx="12" cy="15" r="2.5"></circle>
+      </svg>
+      <span>ตารางสอบ</span>
+    </button>
+    <button type="button" class="aqua-dock-item dock-reading" data-target="pane-reading" id="tab-btn-reading">
+      <!-- Modern reading icon: Open Book with page lines & bookmark -->
+      <svg class="dock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      <span>อ่านหนังสือ</span>
+    </button>
+    <button type="button" class="aqua-dock-item dock-curriculum" data-target="pane-curriculum" id="tab-btn-curriculum">
+      <!-- Modern curriculum icon: Academic graduation cap -->
+      <svg class="dock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+      </svg>
+      <span>โครงสร้างหลักสูตร</span>
+    </button>
+  </nav>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- MODAL: ตั้งค่าวันสอบและห้องสอบ (Liquid Glass Window Style) -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <div class="aqua-modal-backdrop" id="exam-edit-modal" style="display:none;">
+    <div class="aqua-modal-window">
+      <!-- Aero Glass Window Titlebar -->
+      <div class="aqua-window-titlebar aero-modal-header">
+        <div class="aero-modal-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span class="aqua-window-title">กำหนดรายละเอียดการสอบ มสธ.</span>
+        </div>
+        <button type="button" class="aero-modal-close-btn" id="btn-close-exam-modal" aria-label="ปิดหน้าต่าง">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="aqua-modal-body">
+        <form id="form-exam-setup" onsubmit="event.preventDefault();">
+         <div class="aqua-modal-scroll">
+          <div class="aqua-course-banner">
+            <span class="banner-code-pill" id="modal-course-code">10151</span>
+            <span class="banner-course-title" id="modal-course-name">ไทยศึกษา</span>
+          </div>
+          <div class="aqua-form-grid">
+            <div class="aqua-field">
+              <label class="aqua-label">ประเภทการสอบ มสธ.</label>
+              <select class="aqua-select" id="inp-modal-type">
+                <option value="regular">สอบไล่ประจำภาคปกติ</option>
+                <option value="samrit">โครงการสัมฤทธิบัตร</option>
+                <option value="summer">ภาคพิเศษ / ภาคฤดูร้อน</option>
+                <option value="retake">การสอบซ่อม (Make-up)</option>
+              </select>
+            </div>
+
+            <div class="aqua-field">
+              <label class="aqua-label">รูปแบบการจัดสอบ</label>
+              <select class="aqua-select" id="inp-modal-format" onchange="App.onExamFormatChange(this.value)">
+                <option value="onsite">สอบ ณ สนามสอบ (On-site)</option>
+                <option value="online">สอบออนไลน์ (Online Exam)</option>
+              </select>
+            </div>
+
+            <div class="aqua-field">
+              <label class="aqua-label">วันที่สอบ</label>
+              <input type="date" class="aqua-input" id="inp-modal-date" required>
+            </div>
+
+            <div class="aqua-field">
+              <label class="aqua-label">คาบเวลาสอบ (เลือกช่วงเวลา)</label>
+              <select class="aqua-select" id="inp-modal-session-preset" onchange="App.onExamSessionPresetChange(this.value)">
+                <option value="morning">คาบเช้าปกติ (09:00 - 12:00 น.)</option>
+                <option value="afternoon">คาบบ่ายปกติ (13:30 - 16:30 น.)</option>
+                <option value="custom">กำหนดเวลาสอบเอง (ยืดหยุ่น)</option>
+              </select>
+            </div>
+
+            <!-- Flexible Time Input Controls -->
+            <div class="aqua-field">
+              <label class="aqua-label">เวลาเริ่มสอบ</label>
+              <input type="time" class="aqua-input" id="inp-modal-time-start" value="09:00" onchange="App.onCustomTimeChange()">
+            </div>
+
+            <div class="aqua-field">
+              <label class="aqua-label">เวลาสิ้นสุดการสอบ</label>
+              <input type="time" class="aqua-input" id="inp-modal-time-end" value="12:00" onchange="App.onCustomTimeChange()">
+            </div>
+
+            <div class="aqua-field full-col">
+              <div class="time-adjust-controls-wrap">
+                <span class="time-adjust-hint">ปรับเปลี่ยนเวลายืดหยุ่น:</span>
+                <div class="time-quick-btns">
+                  <button type="button" class="btn-time-step" onclick="App.adjustExamTime('start', -60)">-1 ชม. (เริ่ม)</button>
+                  <button type="button" class="btn-time-step" onclick="App.adjustExamTime('start', 60)">+1 ชม. (เริ่ม)</button>
+                  <button type="button" class="btn-time-step" onclick="App.adjustExamTime('end', -60)">-1 ชม. (จบ)</button>
+                  <button type="button" class="btn-time-step" onclick="App.adjustExamTime('end', 60)">+1 ชม. (จบ)</button>
+                  <button type="button" class="btn-time-step" onclick="App.adjustExamTime('end', 30)">+30 นาที (จบ)</button>
+                </div>
+              </div>
+              <div class="exam-duration-display" id="modal-duration-display">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span id="modal-duration-text">ระยะเวลาสอบ: 3 ชั่วโมง 0 นาที</span>
+              </div>
+            </div>
+
+            <div class="aqua-field full-col" id="field-modal-venue">
+              <label class="aqua-label">สนามสอบ / โรงเรียน</label>
+              <input type="text" class="aqua-input" id="inp-modal-venue" placeholder="เช่น โรงเรียนเบญจมราชูทิศ">
+            </div>
+
+            <div class="aqua-field" id="field-modal-room">
+              <label class="aqua-label">ห้องสอบ / อาคาร</label>
+              <input type="text" class="aqua-input" id="inp-modal-room" placeholder="เช่น อาคาร 3 ห้อง 324">
+            </div>
+
+            <div class="aqua-field" id="field-modal-seat">
+              <label class="aqua-label">เลขที่นั่งสอบ</label>
+              <input type="text" class="aqua-input" id="inp-modal-seat" placeholder="เช่น 042">
+            </div>
+
+            <div class="aqua-field full-col" id="field-modal-row">
+              <label class="aqua-label">แถวที่สอบ</label>
+              <input type="text" class="aqua-input" id="inp-modal-row" placeholder="เช่น 4">
+            </div>
+
+            <div class="aqua-field full-col" id="field-modal-online-hint" style="display:none;">
+              <div class="aqua-online-callout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>การสอบออนไลน์ของ มสธ. จะดำเนินการผ่านระบบออนไลน์ (Online Portal) ตามวันและเวลาที่กำหนด โดยไม่ต้องเดินทางไปยังสนามสอบ</span>
+              </div>
+            </div>
+          </div>
+         </div>
+
+          <div class="aqua-modal-actions">
+            <button type="button" class="aqua-btn-secondary" id="btn-cancel-modal">ยกเลิก</button>
+            <button type="button" class="aqua-btn-primary-gel" id="btn-save-modal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>บันทึกข้อมูลการสอบ</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- MODAL: เพิ่มวิชา / หนังสือที่จะอ่าน (Reading Add Modal) -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <div class="aqua-modal-backdrop" id="reading-add-modal" style="display:none;">
+    <div class="aqua-modal-window">
+      <!-- Titlebar -->
+      <div class="aqua-window-titlebar aero-modal-header">
+        <div class="aero-modal-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span class="aqua-window-title">เพิ่มวิชา / เล่มหนังสือที่จะอ่าน</span>
+        </div>
+        <button type="button" class="aero-modal-close-btn" id="btn-close-reading-add-modal" aria-label="ปิดหน้าต่าง">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="aqua-modal-body">
+        <form id="form-reading-add" onsubmit="event.preventDefault();">
+          <div class="aqua-modal-scroll">
+            <div class="aqua-form-grid">
+              <div class="aqua-field full-col">
+                <label class="aqua-label">เลือกจากวิชาในหลักสูตร หรือกรอกใหม่</label>
+                <select class="aqua-select" id="inp-book-preset-course" onchange="App.onPresetCourseChange(this.value)">
+                  <option value="">-- เลือกจากวิชาในหลักสูตร --</option>
+                  <!-- Populated dynamically by app.js -->
+                </select>
+              </div>
+
+              <div class="aqua-field">
+                <label class="aqua-label">รหัสชุดวิชา (5 หลัก)</label>
+                <input type="text" class="aqua-input" id="inp-book-course-code" placeholder="เช่น 10151" required maxlength="10">
+              </div>
+
+              <div class="aqua-field">
+                <label class="aqua-label">จำนวนหน่วย/บท (มสธ. นิยม 15)</label>
+                <input type="number" class="aqua-input" id="inp-book-total-units" value="15" min="1" max="30" required>
+              </div>
+
+              <div class="aqua-field full-col">
+                <label class="aqua-label">ชื่อชุดวิชา</label>
+                <input type="text" class="aqua-input" id="inp-book-course-name" placeholder="เช่น ไทยศึกษา" required>
+              </div>
+
+              <div class="aqua-field full-col">
+                <label class="aqua-label">ชื่อหนังสือ / เอกสารการสอน (ระบุหรือไม่ก็ได้)</label>
+                <input type="text" class="aqua-input" id="inp-book-title" placeholder="เช่น เอกสารการสอนชุดวิชาไทยศึกษา (หน่วยที่ 1-15)">
+              </div>
+            </div>
+          </div>
+
+          <div class="aqua-modal-actions">
+            <button type="button" class="aqua-btn-secondary" id="btn-cancel-reading-add">ยกเลิก</button>
+            <button type="button" class="aqua-btn-primary-gel" id="btn-save-new-book">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>เพิ่มหนังสืออ่าน</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- MODAL: เพิ่มตอนย่อยในหน่วย (Sub-Unit Add Modal)     -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <div class="aqua-modal-backdrop" id="subunit-add-modal" style="display:none;">
+    <div class="aqua-modal-window" style="max-width: 440px;">
+      <div class="aqua-window-titlebar aero-modal-header">
+        <div class="aero-modal-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"></path></svg>
+          <span class="aqua-window-title" id="modal-subunit-heading">เพิ่มตอนย่อย / หัวข้อย่อย</span>
+        </div>
+        <button type="button" class="aero-modal-close-btn" id="btn-close-subunit-modal" aria-label="ปิดหน้าต่าง">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="aqua-modal-body">
+        <form id="form-subunit-add" onsubmit="event.preventDefault();">
+          <div class="aqua-modal-scroll">
+            <div class="aqua-course-banner" style="margin-bottom: 14px;">
+              <span class="banner-code-pill" id="modal-subunit-course-code">10151</span>
+              <span class="banner-course-title" id="modal-subunit-unit-title">หน่วยที่ 1</span>
+            </div>
+
+            <div class="aqua-form-grid" style="grid-template-columns: 1fr;">
+              <div class="aqua-field">
+                <label class="aqua-label">ลำดับตอนย่อย (เช่น 1.4 หรือ 1.5)</label>
+                <input type="text" class="aqua-input" id="inp-subunit-id" placeholder="เช่น 1.4" required>
+              </div>
+
+              <div class="aqua-field">
+                <label class="aqua-label">ชื่อตอนย่อย / หัวข้อเนื้อหา</label>
+                <input type="text" class="aqua-input" id="inp-subunit-title" placeholder="เช่น ตอนที่ 1.4: สรุปสาระสำคัญและแบบฝึกปฏิบัติ" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="aqua-modal-actions">
+            <button type="button" class="aqua-btn-secondary" id="btn-cancel-subunit-modal">ยกเลิก</button>
+            <button type="button" class="aqua-btn-primary-gel" id="btn-save-subunit-modal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>เพิ่มตอนย่อย</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════════════════════════════════════ -->
+  <!-- MODAL: ศูนย์ซิงค์และย้ายข้อมูล (Sync & Transfer Hub) -->
+  <!-- ═════════════════════════════════════════════════ -->
+  <div class="aqua-modal-backdrop" id="sync-backup-modal" style="display:none;">
+    <div class="aqua-modal-window" style="max-width: 480px;">
+      <div class="aqua-window-titlebar aero-modal-header">
+        <div class="aero-modal-title-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+          </svg>
+          <span class="aqua-window-title">ศูนย์ซิงค์และย้ายข้อมูลข้ามเครื่อง</span>
+        </div>
+        <button type="button" class="aero-modal-close-btn" id="btn-close-sync-modal" aria-label="ปิดหน้าต่าง">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="aqua-modal-body">
+        <div class="aqua-modal-scroll">
+          
+          <!-- Sync / Storage Status Card -->
+          <div class="sync-status-card">
+            <div class="sync-status-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div class="sync-status-info">
+              <div class="sync-status-heading">บันทึกอัตโนมัติบนอุปกรณ์นี้แล้ว</div>
+              <div class="sync-status-sub" id="sync-status-summary">ข้อมูลปลอดภัย พร้อมใช้งาน</div>
+            </div>
+          </div>
+
+          <div style="text-align:center; margin: 4px 0 12px 0;">
+            <p style="font-size:0.86rem; font-weight:700; color:var(--text-main); margin:0;">ต้องการดาวน์โหลด หรืออัปโหลดข้อมูล?</p>
+            <p style="font-size:0.72rem; color:var(--text-muted); margin:2px 0 0 0;">เลือกดำเนินการเพื่อย้ายข้อมูลไปใช้บนมือถือ/คอมพิวเตอร์เครื่องอื่น</p>
+          </div>
+
+          <!-- Section 1: ดาวน์โหลดข้อมูล (Download .json) -->
+          <div class="sync-section-block">
+            <h4 class="sync-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>1. ดาวน์โหลดไฟล์ข้อมูล (.json)</span>
+            </h4>
+            <p class="sync-section-desc">บันทึกข้อมูลทั้งหมด (ตารางสอบ, บันทึกการอ่าน 15 หน่วย, โครงสร้างหลักสูตร) ลงเครื่องเพื่อนำไปอัปโหลดในเครื่องอื่น หรือเก็บสำรองไว้</p>
+            <button type="button" class="aqua-btn-gel" id="btn-sync-export-json" style="width:100%; justify-content:center;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>ดาวน์โหลดไฟล์ .json เก็บไว้</span>
+            </button>
+          </div>
+
+          <!-- Section 2: อัปโหลดข้อมูล (Upload .json) -->
+          <div class="sync-section-block">
+            <h4 class="sync-section-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span>2. อัปโหลดไฟล์ข้อมูล (.json) เพื่อซิงค์กับเครื่องนี้</span>
+            </h4>
+            <p class="sync-section-desc">เลือกไฟล์ .json ที่มีอยู่ เพื่อดึงข้อมูลเดิมกลับมา หรือซิงค์ข้อมูลมาจากอุปกรณ์อื่น</p>
+
+            <!-- Mode selector radio buttons -->
+            <div class="sync-mode-selector">
+              <label class="sync-mode-radio">
+                <input type="radio" name="sync-import-mode" value="merge" id="sync-mode-merge" checked>
+                <div class="sync-mode-box">
+                  <div class="sync-mode-box-title">รวมข้อมูลเดิม (Merge)</div>
+                  <div class="sync-mode-box-sub">อัปเดตวิชาที่มีอยู่และเพิ่มวิชาใหม่ โดยไม่ลบวิชาเดิม</div>
+                </div>
+              </label>
+
+              <label class="sync-mode-radio">
+                <input type="radio" name="sync-import-mode" value="replace" id="sync-mode-replace">
+                <div class="sync-mode-box sync-mode-box-accent">
+                  <div class="sync-mode-box-title">แทนที่หลักสูตรสาขาใหม่ (Switch Major)</div>
+                  <div class="sync-mode-box-sub">ล้างวิชาสาขาเดิมทั้งหมด แล้วใส่รายวิชาสาขาใหม่ตามไฟล์นี้ทันที</div>
+                </div>
+              </label>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <input type="file" id="inp-sync-import-file" accept=".json,application/json" style="display:none;">
+              <button type="button" class="aqua-btn-primary-gel" id="btn-sync-trigger-import" style="width:100%; justify-content:center;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>เลือกไฟล์ .json เพื่ออัปโหลด</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 3: รีเซ็ตหลักสูตรเดิมเพื่อเตรียมขึ้นสาขาใหม่ -->
+          <div class="sync-section-block sync-danger-block">
+            <h4 class="sync-section-title text-danger">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>3. รีเซ็ตโครงสร้างหลักสูตร (Reset Curriculum)</span>
+            </h4>
+            <p class="sync-section-desc">ต้องการเปลี่ยนสาขาวิชาหรือไม่? สามารถกดล้างรายวิชาในหลักสูตรเดิมทั้งหมดให้เป็น 0 เพื่อเตรียมเพิ่มหรือนำเข้ารายวิชาของสาขาใหม่ได้</p>
+            <button type="button" class="aqua-btn-danger-outline" id="btn-sync-reset-curriculum">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>ล้างรายวิชาในหลักสูตรทั้งหมด</span>
+            </button>
+          </div>
+
+        </div>
+
+        <div class="aqua-modal-actions" style="margin-top:10px;">
+          <button type="button" class="aqua-btn-secondary" id="btn-cancel-sync-modal" style="width:100%; justify-content:center;">ปิดหน้าต่าง</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Toast Notification System -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="./js/app.js"></script>
+</body>
+</html>

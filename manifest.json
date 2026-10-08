@@ -1,0 +1,33 @@
+{
+  "name": "STOU Exam Pass - ตารางสอบและโครงสร้างหลักสูตร มสธ.",
+  "short_name": "STOU Exam",
+  "description": "แอปตรวจสอบตารางสอบ นับถอยหลังวันสอบ และโครงสร้างหลักสูตร มหาวิทยาลัยสุโขทัยธรรมาธิราช",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090e17",
+  "theme_color": "#0284c7",
+  "lang": "th",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "192x192 512x512 any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "192x192 512x512 any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity",
+    "utilities"
+  ],
+  "screenshots": []
+}
