@@ -104,10 +104,6 @@
             <h3 class="summary-degree-title">ความคืบหน้าการอ่านหนังสือ</h3>
           </div>
           <div class="summary-header-actions">
-            <!-- Add New Book / Subject (ปุ่มกลมเล็กไอคอนบวก) -->
-            <button type="button" class="btn-icon-round btn-icon-add-book" id="btn-open-add-book-modal" title="เพิ่มวิชา / เล่มหนังสือที่จะอ่าน" aria-label="เพิ่มหนังสือ">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
             <div class="summary-total-pill reading-total-pill">
               <span class="summary-total-num" id="reading-stat-percent">0%</span>
               <span class="summary-total-text" id="reading-stat-fraction">(0/0 หน่วย)</span>
@@ -129,10 +125,12 @@
           <div class="reading-stat-item">
             <span class="reading-stat-label">อ่านจบแล้ว</span>
             <strong class="reading-stat-val val-green" id="reading-stat-completed-units">0 หน่วย</strong>
+            <span class="reading-stat-subdetail" id="reading-stat-completed-subs"></span>
           </div>
           <div class="reading-stat-item">
             <span class="reading-stat-label">ยังไม่ได้อ่าน</span>
             <strong class="reading-stat-val val-amber" id="reading-stat-remaining-units">0 หน่วย</strong>
+            <span class="reading-stat-subdetail" id="reading-stat-remaining-subs"></span>
           </div>
         </div>
       </div>

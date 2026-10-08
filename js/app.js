@@ -2701,13 +2701,7 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
 
     const statFraction = document.getElementById('reading-stat-fraction');
     if (statFraction) {
-      if (readingUnits > 0) {
-        statFraction.textContent = `(อ่านจบ ${completedUnits} • กำลังอ่าน ${readingUnits} / ${totalUnits} หน่วย)`;
-      } else if (totalSubUnits > totalUnits) {
-        statFraction.textContent = `(${completedUnits}/${totalUnits} หน่วย • ${completedSubUnits}/${totalSubUnits} ตอน)`;
-      } else {
-        statFraction.textContent = `(${completedUnits}/${totalUnits} หน่วย)`;
-      }
+      statFraction.textContent = `(${completedUnits}/${totalUnits} หน่วย)`;
     }
 
     const fillBar = document.getElementById('reading-progress-fill');
@@ -2717,20 +2711,36 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
     if (statTotalBooks) statTotalBooks.textContent = `${books.length} เล่ม`;
 
     const statComp = document.getElementById('reading-stat-completed-units');
+    const statCompSub = document.getElementById('reading-stat-completed-subs');
     if (statComp) {
+      statComp.textContent = `${completedUnits} หน่วย`;
+    }
+    if (statCompSub) {
       if (readingUnits > 0) {
-        statComp.textContent = `${completedUnits} หน่วย (กำลังอ่าน ${readingUnits})`;
+        statCompSub.textContent = `(กำลังอ่าน ${readingUnits} หน่วย)`;
+        statCompSub.style.display = 'block';
+      } else if (totalSubUnits > totalUnits) {
+        statCompSub.textContent = `(อ่านจบ ${completedSubUnits} ตอน)`;
+        statCompSub.style.display = 'block';
       } else {
-        statComp.textContent = totalSubUnits > totalUnits
-          ? `${completedUnits} หน่วย (${completedSubUnits} ตอน)`
-          : `${completedUnits} หน่วย`;
+        statCompSub.style.display = 'none';
       }
     }
 
     const statRem = document.getElementById('reading-stat-remaining-units');
+    const statRemSub = document.getElementById('reading-stat-remaining-subs');
     if (statRem) {
       const remUnits = Math.max(0, totalUnits - completedUnits);
       statRem.textContent = `${remUnits} หน่วย`;
+    }
+    if (statRemSub) {
+      const remSubs = Math.max(0, totalSubUnits - completedSubUnits);
+      if (totalSubUnits > totalUnits && remSubs > 0) {
+        statRemSub.textContent = `(เหลือ ${remSubs} ตอน)`;
+        statRemSub.style.display = 'block';
+      } else {
+        statRemSub.style.display = 'none';
+      }
     }
 
     if (books.length === 0) {
@@ -2834,6 +2844,7 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             const topics = Array.isArray(s.topics) ? s.topics : [];
             const hasTopics = topics.length > 0;
             const topicsDoneCount = topics.filter(t => this.getTopicStatus(t) === 'completed').length;
+            const topicsReadingCount = topics.filter(t => this.getTopicStatus(t) === 'reading').length;
 
             let topicsListHtml = '';
             if (hasTopics) {
@@ -2866,12 +2877,21 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
                     <button type="button" class="btn-topic-check ${topicBtnStateClass}" onclick="App.toggleTopicCheck('${b.courseCode}', ${u.unit}, '${s.id}', '${t.id}')" aria-label="${topicAriaLabel}" title="${topicAriaLabel}">
                       ${topicIconHtml}
                     </button>
-                    <span class="topic-id-pill">เรื่อง ${t.id}</span>
-                    <span class="topic-title-text">${t.title || `เรื่องที่ ${t.id}`}</span>
-                    ${tReading ? '<span class="topic-reading-indicator">กำลังอ่าน</span>' : ''}
-                    <button type="button" class="btn-del-topic" onclick="App.deleteTopic('${b.courseCode}', ${u.unit}, '${s.id}', '${t.id}')" title="ลบเรื่อง ${t.id}" aria-label="ลบเรื่อง">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
+                    <div class="topic-main-col">
+                      <div class="topic-meta-row">
+                        <div class="topic-meta-left">
+                          <span class="topic-id-pill">เรื่อง ${t.id}</span>
+                          ${tDone ? '<span class="unit-done-tag" style="font-size:0.65rem; padding:1px 6px;">อ่านจบแล้ว</span>' : ''}
+                          ${tReading ? '<span class="unit-reading-tag" style="font-size:0.65rem; padding:1px 6px;">กำลังอ่าน</span>' : ''}
+                        </div>
+                        <div class="topic-meta-right">
+                          <button type="button" class="btn-del-topic" onclick="App.deleteTopic('${b.courseCode}', ${u.unit}, '${s.id}', '${t.id}')" title="ลบเรื่อง ${t.id}" aria-label="ลบเรื่อง">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </button>
+                        </div>
+                      </div>
+                      <span class="topic-title-text">${t.title || `เรื่องที่ ${t.id}`}</span>
+                    </div>
                   </div>`;
               });
             }
@@ -2879,10 +2899,6 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
             const topicsBoxHtml = hasTopics ? `
               <div class="subunit-topics-box">
                 ${topicsListHtml}
-                <button type="button" class="btn-add-topic-inline" onclick="event.stopPropagation(); App.openAddTopicModal('${b.courseCode}', ${u.unit}, '${s.id}');" title="เพิ่มเรื่องในตอนที่ ${s.id}">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ เพิ่มเรื่อง</span>
-                </button>
               </div>` : '';
 
             subUnitsListHtml += `
@@ -2891,31 +2907,33 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
                   <button type="button" class="btn-subunit-check ${subBtnStateClass}" onclick="App.toggleSubUnitCheck('${b.courseCode}', ${u.unit}, '${s.id}')" aria-label="${subAriaLabel}" title="${subAriaLabel}">
                     ${subIconHtml}
                   </button>
-                  <span class="subunit-id-pill">ตอน ${s.id}</span>
-                  <span class="subunit-title-text">${s.title || `ตอนที่ ${s.id}`}</span>
-                  ${hasTopics ? `<span class="unit-subcount-pill ${topicsDoneCount === topics.length ? 'all-done' : ''}" style="font-size:0.65rem; padding: 1px 6px;">${topicsDoneCount}/${topics.length} เรื่อง</span>` : ''}
-                  ${sReading && !hasTopics ? '<span class="subunit-reading-indicator">กำลังอ่าน</span>' : ''}
-                  <button type="button" class="btn-add-topic-mini" onclick="event.stopPropagation(); App.openAddTopicModal('${b.courseCode}', ${u.unit}, '${s.id}');" title="เพิ่มเรื่องในตอนที่ ${s.id}">
-                    + เรื่อง
-                  </button>
-                  <button type="button" class="btn-del-subunit" onclick="App.deleteSubUnit('${b.courseCode}', ${u.unit}, '${s.id}')" title="ลบตอนย่อย ${s.id}" aria-label="ลบตอนย่อย">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
+                  <div class="subunit-main-col">
+                    <div class="subunit-meta-row">
+                      <div class="subunit-meta-left">
+                        <span class="subunit-id-pill">ตอน ${s.id}</span>
+                        ${hasTopics ? `<span class="unit-subcount-pill ${topicsDoneCount === topics.length ? 'all-done' : (topicsReadingCount > 0 ? 'is-reading' : '')}" style="font-size:0.65rem; padding: 1px 6px;">${topicsDoneCount}/${topics.length} เรื่อง</span>` : ''}
+                        ${sDone ? '<span class="unit-done-tag" style="font-size:0.65rem; padding:1px 6px;">อ่านจบแล้ว</span>' : ''}
+                        ${sReading && !hasTopics ? '<span class="subunit-reading-indicator">กำลังอ่าน</span>' : ''}
+                      </div>
+                      <div class="subunit-meta-right">
+                        <button type="button" class="btn-del-subunit" onclick="App.deleteSubUnit('${b.courseCode}', ${u.unit}, '${s.id}')" title="ลบตอนย่อย ${s.id}" aria-label="ลบตอนย่อย">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <span class="subunit-title-text">${s.title || `ตอนที่ ${s.id}`}</span>
+                  </div>
                 </div>
                 ${topicsBoxHtml}
               </div>`;
           });
         }
 
-        // Sub-units container with "+ เพิ่มตอนย่อย"
-        const subUnitsContainerHtml = `
+        // Sub-units container
+        const subUnitsContainerHtml = hasSubs ? `
           <div class="unit-subunits-box">
             ${subUnitsListHtml}
-            <button type="button" class="btn-add-subunit-inline" onclick="event.stopPropagation(); App.openAddSubUnitModal('${b.courseCode}', ${u.unit});" title="เพิ่มตอนย่อยในหน่วยที่ ${u.unit}">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>+ เพิ่มตอนย่อย</span>
-            </button>
-          </div>`;
+          </div>` : '';
 
         let unitIconHtml = '';
         let unitAriaLabel = '';
