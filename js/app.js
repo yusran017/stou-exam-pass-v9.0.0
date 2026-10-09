@@ -899,58 +899,7 @@ const App = {
       countBadge.textContent = `${courses.length} วิชา`;
     }
 
-    // Update Mission Dashboard HUD stats
-    const totalCredits = courses.reduce((sum, c) => sum + (c.credits || 6), 0);
-    const elMissionCourses = document.getElementById('mission-total-courses');
-    const elMissionCredits = document.getElementById('mission-total-credits');
-    if (elMissionCourses) elMissionCourses.textContent = `${courses.length} วิชา`;
-    if (elMissionCredits) elMissionCredits.textContent = `${totalCredits} หน่วยกิต`;
 
-    // Overall Reading Readiness across enrolled courses
-    let totalExamUnits = 0;
-    let completedExamUnits = 0;
-    courses.forEach(c => {
-      const book = studyPlan.find(b => b.courseCode === c.courseCode);
-      if (book) {
-        const uList = book.units || [];
-        totalExamUnits += (uList.length || 15);
-        completedExamUnits += uList.filter(u => this.getUnitStatus(u) === 'completed').length;
-      } else {
-        totalExamUnits += 15;
-      }
-    });
-    const examReadinessPct = totalExamUnits > 0 ? Math.round((completedExamUnits / totalExamUnits) * 100) : 0;
-    const elReadinessPct = document.getElementById('mission-readiness-percent');
-    if (elReadinessPct) elReadinessPct.textContent = `${examReadinessPct}%`;
-    const elReadinessBar = document.getElementById('mission-readiness-bar');
-    if (elReadinessBar) elReadinessBar.style.width = `${examReadinessPct}%`;
-
-    const nextExam = this.findNearestUpcomingExam();
-    const elNearestDays = document.getElementById('mission-nearest-days');
-    const elNearestCourse = document.getElementById('mission-nearest-course');
-    const elStatusBadge = document.getElementById('mission-status-text');
-    if (nextExam && nextExam.examDate) {
-      const targetD = new Date(nextExam.examDate + 'T00:00:00');
-      const nowD = new Date(new Date().toISOString().split('T')[0] + 'T00:00:00');
-      const dDiff = Math.round((targetD - nowD) / (1000 * 60 * 60 * 24));
-      if (elNearestDays) {
-        if (dDiff > 1) elNearestDays.textContent = `อีก ${dDiff} วัน`;
-        else if (dDiff === 1) elNearestDays.textContent = `พรุ่งนี้!`;
-        else if (dDiff === 0) elNearestDays.textContent = `สอบวันนี้!`;
-        else elNearestDays.textContent = `สอบแล้ว`;
-      }
-      if (elNearestCourse) elNearestCourse.textContent = `${nextExam.courseCode} ${nextExam.courseNameTh}`;
-    } else {
-      if (elNearestDays) elNearestDays.textContent = `- วัน`;
-      if (elNearestCourse) elNearestCourse.textContent = `ยังไม่มีกำหนดวัน`;
-    }
-
-    if (elStatusBadge) {
-      if (courses.length === 0) elStatusBadge.textContent = 'ยังไม่มีรอบสอบ';
-      else if (examReadinessPct >= 80) elStatusBadge.textContent = 'พร้อมรบเกิน 80%! มั่นใจเกรด H';
-      else if (examReadinessPct >= 40) elStatusBadge.textContent = 'ไต่ระดับสปีดอ่าน (On Track)';
-      else elStatusBadge.textContent = 'เตรียมพร้อมลุย (In Mission)';
-    }
 
     if (courses.length === 0) {
       container.innerHTML = `
@@ -1069,108 +1018,58 @@ const App = {
 
       html += `
         <div class="aqua-exam-card ${isExpanded ? 'is-expanded' : ''} exam-card-${examType}" id="exam-card-${c.courseCode}">
-          <!-- Advanced Card Header HUD -->
+          <!-- Mobile-Optimized Card Header (Tier 1: Meta & Countdown, Tier 2: 100% Full Width Title) -->
           <div class="exam-card-head" onclick="App.toggleExamExpand('${c.courseCode}')">
-            <div class="exam-head-left">
-              <div class="exam-code-badge-wrap">
+            <!-- Row 1: Code + Exam Type on Left, Countdown Chip + Expand Icon on Right -->
+            <div class="exam-head-top-row">
+              <div class="exam-head-tags">
                 <span class="exam-code-pill-gel pill-code-${examType}">${c.courseCode}</span>
                 <span class="exam-type-pill ${typeBadgeClass}">${typeLabel}</span>
               </div>
-              <div class="exam-head-info">
-                <h3 class="exam-course-name">${c.courseNameTh}</h3>
-                <div class="exam-quick-meta">
-                  <span class="exam-quick-meta-item">
-                    ${isMorning ? this.getMorningSunSvg() : this.getAfternoonSunSvg()}
-                    <span>${c.examDateTh || c.examDate || 'ยังไม่กำหนดวัน'} • ${sessionLabel}</span>
-                  </span>
+              <div class="exam-head-actions">
+                ${daysDiffHtml}
+                <div class="exam-expand-icon" title="แตะดูกำหนดการ วัน เวลา และสนามสอบ">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
               </div>
             </div>
 
-            <div class="exam-head-right">
-              ${daysDiffHtml}
-              <div class="exam-expand-icon" title="กาง/หุบ รายละเอียด">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Exam Tactical Intel Grid (Always Visible at a Glance) -->
-          <div class="exam-tactical-strip">
-            <div class="tactical-item">
-              <span class="tactical-label">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                วันเวลาสอบ
-              </span>
-              <strong class="tactical-val">${c.examDateTh || c.examDate || 'ยังไม่กำหนด'} (${sessionTimeRange})</strong>
+            <!-- Row 2: Full-Width Course Name (No button crowding or title clipping) -->
+            <div class="exam-title-row">
+              <h3 class="exam-course-name">${c.courseNameTh}</h3>
             </div>
 
-            <div class="tactical-item">
-              <span class="tactical-label">
-                ${isOnline ? this.getOnlineFormatSvg() : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'}
-                สนามสอบ
-              </span>
-              <strong class="tactical-val">${venue}</strong>
-            </div>
-
-            ${!isOnline ? `
-              <div class="tactical-item">
-                <span class="tactical-label">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                  ห้อง & ที่นั่งสอบ
+            <!-- Row 3: Study Readiness Gauge (สร้างแรงผลักดันและกระตุ้นการอ่าน) -->
+            <div class="exam-readiness-box">
+              <div class="readiness-box-top">
+                <div class="readiness-box-left">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                  <span>ความพร้อม: <strong>${courseUnitsDone} / ${courseTotalUnits} หน่วย (${courseReadinessPct}%)</strong></span>
+                </div>
+                <span class="readiness-badge-pill ${readinessBadgeClass}">
+                  ${readinessMotivationText}
                 </span>
-                <strong class="tactical-val">${c.examRoom ? c.examRoom : 'รอประกาศห้อง'} • ที่นั่ง ${c.seatNumber ? `${c.seatNumber}${c.examRow ? ` (แถว ${c.examRow})` : ''}` : 'รอประกาศ'}</strong>
               </div>
-            ` : `
-              <div class="tactical-item">
-                <span class="tactical-label">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                  รูปแบบการสอบ
-                </span>
-                <strong class="tactical-val">เข้าสอบออนไลน์ผ่านระบบ มสธ. จากที่พัก</strong>
+              <div class="readiness-track">
+                <div class="readiness-fill fill-${examType}" style="width: ${courseReadinessPct}%;"></div>
               </div>
-            `}
-          </div>
-
-          <!-- Study Readiness Battle Gauge (ความพร้อมอ่านหนังสือของวิชานี้) -->
-          <div class="exam-readiness-box">
-            <div class="readiness-box-top">
-              <div class="readiness-box-left">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                <span>ความพร้อมเนื้อหา: <strong>${courseUnitsDone} / ${courseTotalUnits} หน่วย (${courseReadinessPct}%)</strong></span>
-              </div>
-              <span class="readiness-badge-pill ${readinessBadgeClass}">
-                ${readinessMotivationText}
-              </span>
-            </div>
-            <div class="readiness-track">
-              <div class="readiness-fill fill-${examType}" style="width: ${courseReadinessPct}%;"></div>
             </div>
           </div>
 
-          <!-- Quick Mission Actions Bar -->
-          <div class="exam-card-actions-bar">
-            <button type="button" class="btn-exam-action-mission btn-mission-primary" onclick="event.stopPropagation(); App.goToReadingForCourse('${c.courseCode}')" title="เปิดอ่านหนังสือวิชานี้">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-              <span>เปิดอ่านหนังสือวิชานี้</span>
-            </button>
-            <button type="button" class="btn-exam-action-mission" onclick="event.stopPropagation(); App.openExamModal('${c.courseCode}')" title="แก้ไขข้อมูลสอบ">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-              <span>แก้ไขข้อมูลสอบ</span>
+          <!-- Primary Direct Study CTA Button -->
+          <div class="exam-card-cta-bar">
+            <button type="button" class="btn-exam-study-cta" onclick="event.stopPropagation(); App.goToReadingForCourse('${c.courseCode}')" title="เปิดอ่านหนังสือวิชานี้ทันที">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+              <span>ลุยอ่านหนังสือวิชานี้ (อ่านแล้ว ${courseUnitsDone}/${courseTotalUnits} หน่วย)</span>
             </button>
           </div>
 
-          <!-- Accordion Details (Revealed on Click) -->
+          <!-- Accordion Details (Revealed ON CLICK ONLY: วันเวลาสอบ, สนามสอบ, ห้องและที่นั่ง) -->
           <div class="exam-accordion-details">
-            <div class="exam-tag-row details-tag-row">
-              <span class="exam-type-pill ${typeBadgeClass}">${typeLabel}</span>
-              <span class="exam-format-pill ${isOnline ? 'format-online' : 'format-onsite'}">
-                ${isOnline ? this.getOnlineFormatSvg() : this.getOnsiteFormatSvg()}
-                <span>${isOnline ? 'สอบออนไลน์' : 'สนามสอบ'}</span>
-              </span>
-              ${sessionPillHtml}
+            <div class="details-section-heading">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>รายละเอียดกำหนดการสอบและสถานที่</span>
             </div>
-
             <div class="details-aqua-grid">
               <div class="details-row-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -1196,7 +1095,7 @@ const App = {
               ` : `
                 <div class="details-row-item full-width-item">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                  <span class="online-exam-desc">สอบออนไลน์ผ่านระบบ มสธ. (Online Portal) จากที่พักอาศัย ตามวันเวลาที่กำหนด</span>
+                  <span class="online-exam-desc">สอบออนไลน์ผ่านระบบ มสธ. (Online Portal) จากที่พักอาศัย</span>
                 </div>
               `}
             </div>
@@ -1382,16 +1281,59 @@ const App = {
       { key: 'transferred', label: 'เทียบโอนชุดวิชา' }
     ];
 
+    const getCategoryDetails = (categoryStr) => {
+      let mainTitle = 'หมวดวิชาทั่วไป';
+      let subTitle = '';
+      let themeClass = 'group-theme-gen';
+
+      if (categoryStr.includes('หมวดวิชาศึกษาทั่วไป')) {
+        mainTitle = 'หมวดวิชาศึกษาทั่วไป';
+        subTitle = 'กลุ่มวิชาบังคับ (5 ชุดวิชา)';
+        themeClass = 'group-theme-gen';
+      } else if (categoryStr.includes('หมวดวิชาเฉพาะ') && categoryStr.includes('กลุ่มวิชาบังคับ')) {
+        mainTitle = 'หมวดวิชาเฉพาะ (วิชาบังคับ)';
+        if (categoryStr.includes('11 ชุดวิชา')) subTitle = 'กลุ่มวิชาบังคับ (11 ชุดวิชา)';
+        else if (categoryStr.includes('2 ชุดวิชา')) subTitle = 'กลุ่มวิชาบังคับ (2 ชุดวิชา)';
+        else subTitle = 'กลุ่มวิชาบังคับ';
+        themeClass = 'group-theme-core';
+      } else if (categoryStr.includes('หมวดวิชาเฉพาะ') && categoryStr.includes('กลุ่มวิชาเลือก')) {
+        mainTitle = 'หมวดวิชาเฉพาะ (วิชาเลือก)';
+        subTitle = 'กลุ่มวิชาเลือก (เลือก 2 ชุดวิชา)';
+        themeClass = 'group-theme-major-elec';
+      } else if (categoryStr.includes('หมวดวิชาเลือกเสรี')) {
+        mainTitle = 'หมวดวิชาเลือกเสรี';
+        subTitle = 'วิชาเลือกเสรี (1 ชุดวิชา)';
+        themeClass = 'group-theme-free';
+      } else {
+        mainTitle = categoryStr;
+        subTitle = '';
+        themeClass = 'group-theme-gen';
+      }
+
+      return { mainTitle, subTitle, themeClass };
+    };
+
     allCategories.forEach((category) => {
       const courses = groups[category];
+      const catInfo = getCategoryDetails(category);
+
       html += `
-        <div class="aqua-cat-group">
+        <div class="aqua-cat-group ${catInfo.themeClass}">
           <div class="aqua-group-head">
-            <span class="group-title-text">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-              <span>${category}</span>
-            </span>
-            <span class="group-count-tag">${courses.length} ชุดวิชา</span>
+            <div class="group-head-top">
+              <div class="group-title-wrap">
+                <span class="group-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </span>
+                <span class="group-main-title">${catInfo.mainTitle}</span>
+              </div>
+              <span class="group-count-tag">${courses.length} ชุดวิชา</span>
+            </div>
+            ${catInfo.subTitle ? `
+              <div class="group-head-sub">
+                <span class="group-sub-chip">${catInfo.subTitle}</span>
+              </div>
+            ` : ''}
           </div>
 
           <div class="aqua-courses-column">`;
@@ -3239,36 +3181,34 @@ ${makeWorksheet('แผนการเรียนและวิชาคงเ
       html += `
         <div class="aqua-book-card ${isExpanded ? 'is-expanded' : ''}" id="book-card-${b.courseCode}">
           <div class="book-card-header" onclick="App.toggleBookExpand('${b.courseCode}')">
-            <div class="book-header-left">
+            <!-- Row 1: Code Pill on Left, Expand Button on Right -->
+            <div class="book-head-top-row">
               <span class="book-code-pill">${b.courseCode}</span>
-              <div class="book-info-col">
-                <h4 class="book-title-text">${b.courseNameTh || `ชุดวิชา ${b.courseCode}`}</h4>
-                <span class="book-subtitle-text">${b.bookTitle || 'เอกสารการสอน มสธ.'}</span>
-              </div>
-            </div>
-
-            <div class="book-header-right">
-              <span class="book-progress-badge ${isAllDone ? 'is-complete' : (bookReading > 0 ? 'is-reading' : '')}">
-                ${isAllDone ? 'จบครบทั้งเล่ม' : (bookReading > 0 ? `${bookComp}/${bookTotal} หน่วย (กำลังอ่าน ${bookReading})` : `${bookComp}/${bookTotal} หน่วย (${bookPct}%)`)}
-              </span>
               <button type="button" class="btn-book-expand" aria-label="กาง/หุบรายการบท">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </button>
             </div>
+
+            <!-- Row 2: Full-Width Course Name (No badges or side elements crowding) -->
+            <div class="book-title-row">
+              <h4 class="book-title-text">${b.courseNameTh || `ชุดวิชา ${b.courseCode}`}</h4>
+            </div>
+
+            <!-- Row 3: Dedicated Reading Progress Bar & Status (แยกอยู่ต่างระดับด้านล่าง) -->
+            <div class="book-progress-strip">
+              <div class="book-progress-track">
+                <div class="book-progress-fill-bar ${isAllDone ? 'fill-done' : (bookReading > 0 ? 'fill-reading' : '')}" style="width: ${bookPct}%;"></div>
+              </div>
+              <div class="book-progress-label-row">
+                <span class="book-progress-num">
+                  ${isAllDone ? '✅ อ่านจบครบ 15 หน่วยแล้ว (100%)' : `อ่านแล้ว <strong>${bookComp}/${bookTotal} หน่วย</strong> (${bookPct}%)`}
+                </span>
+                ${bookReading > 0 ? `<span class="book-reading-chip">กำลังอ่าน ${bookReading} หน่วย</span>` : ''}
+              </div>
+            </div>
           </div>
 
           <div class="book-units-container">
-            <!-- Book Visual Hierarchy Breadcrumbs Bar -->
-            <div class="book-hierarchy-strip">
-              <span class="hier-title">ลำดับการเรียนรู้:</span>
-              <span class="hier-badge hier-course">ชุดวิชา ${b.courseCode}</span>
-              <span class="hier-arrow">›</span>
-              <span class="hier-badge hier-unit">${units.length} หน่วยการเรียน</span>
-              <span class="hier-arrow">›</span>
-              <span class="hier-badge hier-sub">ตอนย่อย</span>
-              <span class="hier-arrow">›</span>
-              <span class="hier-badge hier-topic">เรื่อง</span>
-            </div>
 
             <!-- 15-Unit Visual Quick Navigator Strip -->
             <div class="book-unit-nav-strip">

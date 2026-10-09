@@ -471,6 +471,35 @@ body.modal-open {
   border-color: #ef4444;
 }
 
+/* Excel Export Button with High Contrast Light Mode Adaptation */
+.btn-sync-excel-custom {
+  width: 100%;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.42) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  color: #a7f3d0 !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 9px 16px;
+}
+
+.btn-sync-excel-custom:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="aqua-light"] .btn-sync-excel-custom {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  border: 1px solid #047857 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(4, 120, 87, 0.35) !important;
+}
+
+[data-theme="aqua-light"] .btn-sync-excel-custom:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+  color: #ffffff !important;
+}
+
 .aqua-brand-subtitle {
   font-size: 0.72rem;
   color: var(--text-muted);
@@ -1029,34 +1058,49 @@ body.modal-open {
 }
 
 .exam-card-head {
-  padding: 14px 18px;
+  padding: 14px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.exam-head-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  width: 100%;
+  gap: 8px;
 }
 
-.exam-head-left {
+.exam-head-tags {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.exam-code-badge-wrap {
+.exam-head-actions {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.exam-head-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
+.exam-title-row {
+  width: 100%;
+}
+
+.exam-course-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+[data-theme="aqua-light"] .exam-course-name {
+  color: #0f172a;
 }
 
 .exam-days-chip {
@@ -1292,47 +1336,62 @@ body.modal-open {
   box-shadow: 0 0 8px rgba(251, 146, 60, 0.5);
 }
 
-/* Exam Action Bar */
-.exam-card-actions-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 8px 18px 12px;
+/* Primary Direct Exam Study CTA Bar */
+.exam-card-cta-bar {
+  padding: 0 16px 14px;
 }
 
-.btn-exam-action-mission {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-glass);
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 6px 12px;
+.btn-exam-study-cta {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.95) 0%, rgba(14, 165, 233, 0.9) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  color: #ffffff;
+  padding: 9px 16px;
   border-radius: var(--radius-pill);
-  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
   transition: var(--transition);
 }
 
-.btn-exam-action-mission:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text-main);
-}
-
-.btn-exam-action-mission.btn-mission-primary {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-  border-color: #38bdf8;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-}
-
-.btn-exam-action-mission.btn-mission-primary:hover {
-  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.6);
+.btn-exam-study-cta:hover {
+  filter: brightness(1.1);
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+}
+
+.btn-exam-study-cta:active {
+  transform: translateY(1px);
+}
+
+[data-theme="aqua-light"] .btn-exam-study-cta {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.details-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--aqua-cyan);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="aqua-light"] .details-section-heading {
+  color: #0284c7;
+  border-bottom-color: rgba(0, 0, 0, 0.08);
 }
 
 .exam-code-pill-gel {
@@ -1720,11 +1779,10 @@ body.modal-open {
 }
 
 .book-card-header {
-  padding: 12px 16px;
+  padding: 14px 16px 12px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   cursor: pointer;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
   border-bottom: 1px solid transparent;
@@ -1740,12 +1798,11 @@ body.modal-open {
   border-bottom-color: var(--border-glass);
 }
 
-.book-header-left {
+.book-head-top-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .book-code-pill {
@@ -1760,54 +1817,97 @@ body.modal-open {
   flex-shrink: 0;
 }
 
-.book-info-col {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.book-title-row {
+  width: 100%;
 }
 
 .book-title-text {
-  font-size: 0.94rem;
+  font-size: 1.02rem;
   font-weight: 800;
   color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
-.book-subtitle-text {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+[data-theme="aqua-light"] .book-title-text {
+  color: #0f172a;
 }
 
-.book-header-right {
+.book-progress-strip {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.book-progress-track {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+[data-theme="aqua-light"] .book-progress-track {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.book-progress-fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.book-progress-fill-bar.fill-done {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+}
+
+.book-progress-fill-bar.fill-reading {
+  background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%);
+}
+
+.book-progress-label-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.book-progress-badge {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  color: #34d399;
+.book-progress-num {
   font-size: 0.76rem;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  color: var(--text-muted);
 }
 
-.book-progress-badge.is-complete {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #ffffff;
-  border-color: rgba(52, 211, 153, 0.6);
+.book-progress-num strong {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+[data-theme="aqua-light"] .book-progress-num {
+  color: #475569;
+}
+
+[data-theme="aqua-light"] .book-progress-num strong {
+  color: #0f172a;
+}
+
+.book-reading-chip {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+[data-theme="aqua-light"] .book-reading-chip {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
 }
 
 .btn-book-expand {
@@ -3452,37 +3552,230 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-bottom: 8px;
 }
 
 .aqua-group-head {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  transition: all 0.2s ease;
 }
 
-.group-title-text {
+.group-head-top {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--text-main);
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
 }
 
-.group-title-text svg {
-  width: 16px;
-  height: 16px;
-  color: var(--aqua-cyan);
+.group-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.group-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.group-icon-wrap svg {
+  width: 18px;
+  height: 18px;
+}
+
+.group-main-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .group-count-tag {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.74rem;
+  font-weight: 700;
   padding: 2px 8px;
   border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.group-head-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.group-sub-chip {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  display: inline-block;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+/* ═══ 4 Distinct Category Theme Color Rules ═══ */
+
+/* 1. หมวดวิชาศึกษาทั่วไป (Sky Blue / Cyan Theme) */
+.aqua-cat-group.group-theme-gen .aqua-group-head {
+  border-left: 4px solid #0284c7;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(2, 132, 199, 0.03) 100%);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+.aqua-cat-group.group-theme-gen .group-icon-wrap svg { color: #38bdf8; }
+.aqua-cat-group.group-theme-gen .group-main-title { color: #38bdf8; }
+.aqua-cat-group.group-theme-gen .group-count-tag {
+  color: #38bdf8;
+  background: rgba(2, 132, 199, 0.18);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+.aqua-cat-group.group-theme-gen .group-sub-chip {
+  background: rgba(2, 132, 199, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-gen .aqua-group-head {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bae6fd;
+  border-left: 4px solid #0284c7;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-gen .group-icon-wrap svg { color: #0284c7; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-gen .group-main-title { color: #0369a1; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-gen .group-count-tag {
+  color: #0369a1;
+  background: #ffffff;
+  border-color: #bae6fd;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-gen .group-sub-chip {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+/* 2. หมวดวิชาเฉพาะ (บังคับ) (Amber / Warm Gold Theme) */
+.aqua-cat-group.group-theme-core .aqua-group-head {
+  border-left: 4px solid #d97706;
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.12) 0%, rgba(217, 119, 6, 0.03) 100%);
+  border-color: rgba(251, 191, 36, 0.25);
+}
+.aqua-cat-group.group-theme-core .group-icon-wrap svg { color: #fbbf24; }
+.aqua-cat-group.group-theme-core .group-main-title { color: #fbbf24; }
+.aqua-cat-group.group-theme-core .group-count-tag {
+  color: #fbbf24;
+  background: rgba(217, 119, 6, 0.18);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+.aqua-cat-group.group-theme-core .group-sub-chip {
+  background: rgba(217, 119, 6, 0.15);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-core .aqua-group-head {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+  border-left: 4px solid #d97706;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-core .group-icon-wrap svg { color: #d97706; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-core .group-main-title { color: #b45309; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-core .group-count-tag {
+  color: #b45309;
+  background: #ffffff;
+  border-color: #fde68a;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-core .group-sub-chip {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+/* 3. หมวดวิชาเฉพาะ (เลือก) (Purple / Violet Theme) */
+.aqua-cat-group.group-theme-major-elec .aqua-group-head {
+  border-left: 4px solid #9333ea;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(147, 51, 234, 0.03) 100%);
+  border-color: rgba(192, 132, 252, 0.25);
+}
+.aqua-cat-group.group-theme-major-elec .group-icon-wrap svg { color: #c084fc; }
+.aqua-cat-group.group-theme-major-elec .group-main-title { color: #c084fc; }
+.aqua-cat-group.group-theme-major-elec .group-count-tag {
+  color: #c084fc;
+  background: rgba(147, 51, 234, 0.18);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+}
+.aqua-cat-group.group-theme-major-elec .group-sub-chip {
+  background: rgba(147, 51, 234, 0.15);
+  color: #e9d5ff;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+}
+
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-major-elec .aqua-group-head {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border-color: #e9d5ff;
+  border-left: 4px solid #9333ea;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-major-elec .group-icon-wrap svg { color: #9333ea; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-major-elec .group-main-title { color: #7e22ce; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-major-elec .group-count-tag {
+  color: #7e22ce;
+  background: #ffffff;
+  border-color: #e9d5ff;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-major-elec .group-sub-chip {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border-color: #e9d5ff;
+}
+
+/* 4. หมวดวิชาเลือกเสรี (Emerald / Mint Green Theme) */
+.aqua-cat-group.group-theme-free .aqua-group-head {
+  border-left: 4px solid #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.03) 100%);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+.aqua-cat-group.group-theme-free .group-icon-wrap svg { color: #34d399; }
+.aqua-cat-group.group-theme-free .group-main-title { color: #34d399; }
+.aqua-cat-group.group-theme-free .group-count-tag {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+.aqua-cat-group.group-theme-free .group-sub-chip {
+  background: rgba(16, 185, 129, 0.15);
+  color: #a7f3d0;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-free .aqua-group-head {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+  border-left: 4px solid #059669;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-free .group-icon-wrap svg { color: #059669; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-free .group-main-title { color: #047857; }
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-free .group-count-tag {
+  color: #047857;
+  background: #ffffff;
+  border-color: #a7f3d0;
+}
+[data-theme="aqua-light"] .aqua-cat-group.group-theme-free .group-sub-chip {
+  background: #d1fae5;
+  color: #047857;
+  border-color: #a7f3d0;
 }
 
 .aqua-courses-column {
