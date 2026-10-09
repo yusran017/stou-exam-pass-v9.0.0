@@ -65,11 +65,47 @@
     <!-- ═══════════════════════════════════════════════ -->
     <section id="pane-home" class="tab-pane active">
 
+      <!-- Exam Mission Control HUD (ศูนย์ยุทธการเตรียมสอบ & ความพร้อม) -->
+      <div class="exam-mission-dashboard">
+        <div class="mission-dashboard-header">
+          <div class="mission-title-col">
+            <span class="mission-badge-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              ภารกิจพิชิตสอบ มสธ.
+            </span>
+            <h2 class="mission-title-text">ศูนย์ยุทธการเตรียมสอบ & ความพร้อม</h2>
+            <p class="mission-subtitle-text">วางแผนแม่นยำ • อ่านหนังสือตรงเป้า • พิชิตเกียรตินิยม H และผ่าน S ทุกวิชา</p>
+          </div>
+          <div class="mission-status-pill" id="mission-overall-badge">
+            <span class="mission-pulse-dot"></span>
+            <span id="mission-status-text">พร้อมลุยสอบ</span>
+          </div>
+        </div>
+
+        <div class="mission-hud-grid">
+          <div class="mission-hud-card">
+            <span class="hud-card-label">วิชาในรอบสอบ</span>
+            <strong class="hud-card-val" id="mission-total-courses">0 วิชา</strong>
+            <span class="hud-card-sub" id="mission-total-credits">0 หน่วยกิต</span>
+          </div>
+          <div class="mission-hud-card">
+            <span class="hud-card-label">ความพร้อมอ่านหนังสือรวม</span>
+            <strong class="hud-card-val val-cyan" id="mission-readiness-percent">0%</strong>
+            <div class="hud-mini-bar"><div class="hud-mini-fill" id="mission-readiness-bar" style="width: 0%;"></div></div>
+          </div>
+          <div class="mission-hud-card">
+            <span class="hud-card-label">สอบใกล้ที่สุด</span>
+            <strong class="hud-card-val val-amber" id="mission-nearest-days">- วัน</strong>
+            <span class="hud-card-sub" id="mission-nearest-course">รอประกาศ</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Section Title Header -->
       <div class="aqua-section-bar">
         <div class="section-title-wrap">
           <svg class="section-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-          <h2 class="aqua-section-title">วิชาที่กำลังจะสอบ</h2>
+          <h2 class="aqua-section-title">วิชาที่กำหนดสอบ (Exam Intel)</h2>
         </div>
         <span class="aqua-count-gel-badge" id="exam-count-badge">0 วิชา</span>
       </div>
@@ -135,10 +171,27 @@
         </div>
       </div>
 
+      <!-- Reading Hierarchy Navigation Guide Banner -->
+      <div class="reading-hierarchy-legend-bar">
+        <div class="hierarchy-legend-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span>ลำดับขั้นการอ่าน มสธ.:</span>
+        </div>
+        <div class="hierarchy-legend-steps">
+          <span class="legend-step-chip chip-course">1. ชุดวิชา</span>
+          <span class="legend-arrow">›</span>
+          <span class="legend-step-chip chip-unit">2. หน่วย (1-15)</span>
+          <span class="legend-arrow">›</span>
+          <span class="legend-step-chip chip-subunit">3. ตอนย่อย</span>
+          <span class="legend-arrow">›</span>
+          <span class="legend-step-chip chip-topic">4. เรื่อง</span>
+        </div>
+      </div>
+
       <!-- Quick Hint -->
       <p class="aqua-tab-hint">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        แตะที่ชื่อวิชาเพื่อกางบทย่อย และแตะปุ่มวงกลมเพื่อติ๊กถูกเมื่ออ่านจบแต่ละหน่วย • อัปเดตผ่าน .json ได้
+        แตะที่ชื่อวิชาเพื่อเปิดดูหน่วย (1-15) • แตะวงกลมเพื่อบันทึกสถานะ: ยังไม่อ่าน → กำลังอ่าน → อ่านจบแล้ว
       </p>
 
       <!-- Reading Books List Container -->
@@ -148,7 +201,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════ -->
-    <!-- TAB 2: โครงสร้างหลักสูตร (Locked 126 Credits)   -->
+    <!-- TAB 3: โครงสร้างหลักสูตร (Locked 126 Credits)   -->
     <!-- ═══════════════════════════════════════════════ -->
     <section id="pane-curriculum" class="tab-pane">
 
@@ -170,23 +223,47 @@
           <div class="aqua-progress-fill" id="curriculum-progress-fill" style="width: 0%;"></div>
         </div>
 
-        <!-- Compact Category Grid (Strictly 2 Lines / 2 Rows) -->
+        <!-- High-Clarity Colored Category Grid (Name on Top, Credits on Bottom) -->
         <div class="aqua-cat-grid">
-          <div class="aqua-cat-item" title="หมวดวิชาศึกษาทั่วไป (30 หน่วยกิต)">
-            <span class="cat-item-name">ศึกษาทั่วไป</span>
-            <strong class="cat-item-credits" id="cat-stat-gen">0 / 30 หน่วยกิต</strong>
+          <div class="aqua-cat-item cat-item-gen" title="หมวดวิชาศึกษาทั่วไป (30 หน่วยกิต)">
+            <div class="cat-item-top">
+              <span class="cat-color-dot dot-gen"></span>
+              <span class="cat-item-name">หมวดศึกษาทั่วไป</span>
+            </div>
+            <div class="cat-item-bottom">
+              <strong class="cat-item-credits" id="cat-stat-gen">0 / 30 หน่วยกิต</strong>
+              <div class="cat-mini-bar"><div class="cat-mini-fill fill-gen" id="cat-bar-gen" style="width: 0%;"></div></div>
+            </div>
           </div>
-          <div class="aqua-cat-item" title="หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (78 หน่วยกิต)">
-            <span class="cat-item-name">วิชาเฉพาะ (บังคับ)</span>
-            <strong class="cat-item-credits" id="cat-stat-core">0 / 78 หน่วยกิต</strong>
+          <div class="aqua-cat-item cat-item-core" title="หมวดวิชาเฉพาะ กลุ่มวิชาบังคับ (78 หน่วยกิต)">
+            <div class="cat-item-top">
+              <span class="cat-color-dot dot-core"></span>
+              <span class="cat-item-name">วิชาเฉพาะ (บังคับ)</span>
+            </div>
+            <div class="cat-item-bottom">
+              <strong class="cat-item-credits" id="cat-stat-core">0 / 78 หน่วยกิต</strong>
+              <div class="cat-mini-bar"><div class="cat-mini-fill fill-core" id="cat-bar-core" style="width: 0%;"></div></div>
+            </div>
           </div>
-          <div class="aqua-cat-item" title="หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (12 หน่วยกิต)">
-            <span class="cat-item-name">วิชาเฉพาะ (เลือก)</span>
-            <strong class="cat-item-credits" id="cat-stat-major-elec">0 / 12 หน่วยกิต</strong>
+          <div class="aqua-cat-item cat-item-major-elec" title="หมวดวิชาเฉพาะ กลุ่มวิชาเลือก (12 หน่วยกิต)">
+            <div class="cat-item-top">
+              <span class="cat-color-dot dot-major-elec"></span>
+              <span class="cat-item-name">วิชาเฉพาะ (เลือก)</span>
+            </div>
+            <div class="cat-item-bottom">
+              <strong class="cat-item-credits" id="cat-stat-major-elec">0 / 12 หน่วยกิต</strong>
+              <div class="cat-mini-bar"><div class="cat-mini-fill fill-major-elec" id="cat-bar-major-elec" style="width: 0%;"></div></div>
+            </div>
           </div>
-          <div class="aqua-cat-item" title="หมวดวิชาเลือกเสรี (6 หน่วยกิต)">
-            <span class="cat-item-name">วิชาเลือกเสรี</span>
-            <strong class="cat-item-credits" id="cat-stat-free">0 / 6 หน่วยกิต</strong>
+          <div class="aqua-cat-item cat-item-free" title="หมวดวิชาเลือกเสรี (6 หน่วยกิต)">
+            <div class="cat-item-top">
+              <span class="cat-color-dot dot-free"></span>
+              <span class="cat-item-name">วิชาเลือกเสรี</span>
+            </div>
+            <div class="cat-item-bottom">
+              <strong class="cat-item-credits" id="cat-stat-free">0 / 6 หน่วยกิต</strong>
+              <div class="cat-mini-bar"><div class="cat-mini-fill fill-free" id="cat-bar-free" style="width: 0%;"></div></div>
+            </div>
           </div>
         </div>
       </div>

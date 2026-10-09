@@ -826,6 +826,176 @@ body.modal-open {
 }
 
 /* ═══════════════════════════════════
+   TAB 1: Exam Mission Control Dashboard & HUD
+   ═══════════════════════════════════ */
+.exam-mission-dashboard {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.78) 100%);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="aqua-light"] .exam-mission-dashboard {
+  background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(224, 242, 254, 0.85) 100%);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.12), inset 0 1px 1px #ffffff;
+}
+
+.mission-dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.mission-title-col {
+  flex: 1;
+  min-width: 220px;
+}
+
+.mission-badge-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.14);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.mission-title-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 3px 0;
+  letter-spacing: -0.2px;
+}
+
+.mission-subtitle-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.mission-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+[data-theme="aqua-light"] .mission-status-pill {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.mission-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseNeon 1.6s infinite ease-in-out;
+}
+
+@keyframes pulseNeon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.mission-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 520px) {
+  .mission-hud-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mission-hud-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+[data-theme="aqua-light"] .mission-hud-card {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(226, 232, 240, 0.9);
+}
+
+.hud-card-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hud-card-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.hud-card-val.val-cyan { color: #38bdf8; }
+.hud-card-val.val-amber { color: #fbbf24; }
+
+.hud-card-sub {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-mini-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.hud-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* ═══════════════════════════════════
    TAB 1: Exam Schedule Cards
    ═══════════════════════════════════ */
 .aqua-exam-list {
@@ -859,11 +1029,310 @@ body.modal-open {
 }
 
 .exam-card-head {
-  padding: 16px 18px;
-  min-height: 64px;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
+}
+
+.exam-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.exam-code-badge-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+.exam-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.exam-days-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.exam-days-chip.days-future {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(217, 119, 6, 0.1) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.exam-days-chip.days-tomorrow {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22) 0%, rgba(220, 38, 38, 0.12) 100%);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  color: #f87171;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+  animation: pulseTomorrow 1.4s infinite ease-in-out;
+}
+
+.exam-days-chip.days-today {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: 1px solid #fca5a5;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6);
+}
+
+.exam-days-chip.days-passed {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-dim);
+}
+
+.exam-days-chip.days-waiting {
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  color: #38bdf8;
+}
+
+@keyframes pulseTomorrow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.exam-quick-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+}
+
+.exam-quick-meta-item {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exam-quick-meta-item svg {
+  width: 13px;
+  height: 13px;
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+/* Tactical Intel Strip */
+.exam-tactical-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="aqua-light"] .exam-tactical-strip {
+  background: rgba(241, 245, 249, 0.7);
+  border-top-color: rgba(226, 232, 240, 0.8);
+  border-bottom-color: rgba(226, 232, 240, 0.8);
+}
+
+@media (max-width: 680px) {
+  .exam-tactical-strip {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 10px 14px;
+  }
+}
+
+.tactical-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tactical-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tactical-label svg {
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.tactical-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+/* Exam Study Readiness Gauge */
+.exam-readiness-box {
+  padding: 10px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(14, 165, 233, 0.04);
+}
+
+[data-theme="aqua-light"] .exam-readiness-box {
+  background: rgba(240, 249, 255, 0.5);
+}
+
+.readiness-box-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.readiness-box-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.readiness-box-left strong {
+  color: var(--text-main);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.readiness-box-left svg {
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.readiness-badge-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.readiness-badge-pill.is-ready-100 {
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #34d399;
+}
+
+.readiness-badge-pill.is-ready-mid {
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #fbbf24;
+}
+
+.readiness-badge-pill.is-ready-low,
+.readiness-badge-pill.is-ready-zero {
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+}
+
+.readiness-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+[data-theme="aqua-light"] .readiness-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.readiness-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.readiness-fill.fill-samrit {
+  background: linear-gradient(90deg, #7c3aed 0%, #c084fc 100%);
+  box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+}
+
+.readiness-fill.fill-summer {
+  background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.readiness-fill.fill-retake {
+  background: linear-gradient(90deg, #ea580c 0%, #fb923c 100%);
+  box-shadow: 0 0 8px rgba(251, 146, 60, 0.5);
+}
+
+/* Exam Action Bar */
+.exam-card-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 18px 12px;
+}
+
+.btn-exam-action-mission {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: var(--transition);
+}
+
+.btn-exam-action-mission:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+}
+
+.btn-exam-action-mission.btn-mission-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+.btn-exam-action-mission.btn-mission-primary:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.6);
+  transform: translateY(-1px);
 }
 
 .exam-code-pill-gel {
@@ -1588,10 +2057,10 @@ body.modal-open {
 }
 
 /* ═══════════════════════════════════
-   Reading Tracker: Sub-Units (ตอน) & Topics (เรื่อง)
-   All items have equal 100% width and alignment matching Unit
-   Distinguished by border colors, backgrounds, and level pills
-   Two-tier stacked layout: meta pills on top, full-width title below
+/* ═══════════════════════════════════
+   Reading Tracker: Hierarchy Tree Structure
+   Hierarchy: ชุดวิชา (Course) -> หน่วย 1-15 (Unit) -> ตอน (Sub-unit) -> เรื่อง (Topic)
+   Distinguished by nested connector lines, tier colors, and level badges
    ═══════════════════════════════════ */
 .unit-block-wrap {
   display: flex;
@@ -1601,18 +2070,72 @@ body.modal-open {
   box-sizing: border-box;
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
+  position: relative;
 }
 
-/* SUB-UNITS CONTAINER (ตอน) - Full Width, No Left Indent */
+/* Unit Header Toggle Chevron */
+.btn-toggle-unit-subs {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition);
+  margin-left: 4px;
+}
+
+.btn-toggle-unit-subs:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-main);
+  border-color: var(--border-aqua);
+}
+
+.btn-toggle-unit-subs svg {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: rotate(0deg);
+}
+
+.btn-toggle-unit-subs.is-collapsed svg {
+  transform: rotate(-90deg);
+}
+
+[data-theme="aqua-light"] .btn-toggle-unit-subs {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+[data-theme="aqua-light"] .btn-toggle-unit-subs:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* SUB-UNITS CONTAINER (ตอน) - Tree Indentation & Glowing Branch */
 .unit-subunits-box {
-  margin-left: 0;
-  padding: 4px 0;
-  border-left: none;
+  margin-left: 14px;
+  padding: 6px 0 6px 12px;
+  border-left: 2.5px solid rgba(13, 148, 136, 0.45);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: 100%;
+  gap: 8px;
+  width: calc(100% - 14px);
   box-sizing: border-box;
+  position: relative;
+  transition: all 0.22s ease;
+}
+
+.unit-subunits-box.is-collapsed {
+  display: none !important;
+}
+
+[data-theme="aqua-light"] .unit-subunits-box {
+  border-left-color: rgba(13, 148, 136, 0.4);
 }
 
 .subunit-wrapper {
@@ -1621,61 +2144,62 @@ body.modal-open {
   gap: 6px;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
 }
 
-/* SUB-UNIT ROW (ตอน) */
+/* SUB-UNIT ROW (ตอน) - Tier 2 Hierarchy */
 .subunit-row {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 9px 12px;
   border-radius: var(--radius-md);
-  background: rgba(13, 148, 136, 0.05);
-  border: 1px solid rgba(13, 148, 136, 0.18);
-  border-left: 4px solid #0d9488;
+  background: linear-gradient(90deg, rgba(13, 148, 136, 0.08) 0%, rgba(13, 148, 136, 0.02) 100%);
+  border: 1px solid rgba(13, 148, 136, 0.22);
+  border-left: 3.5px solid #0d9488;
   transition: all 0.18s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
 .subunit-row:hover {
-  background: rgba(13, 148, 136, 0.09);
-  border-color: rgba(13, 148, 136, 0.32);
+  background: linear-gradient(90deg, rgba(13, 148, 136, 0.14) 0%, rgba(13, 148, 136, 0.04) 100%);
+  border-color: rgba(13, 148, 136, 0.35);
 }
 
 .subunit-row.is-completed {
-  background: rgba(16, 185, 129, 0.09);
-  border-color: rgba(52, 211, 153, 0.28);
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.09) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border-color: rgba(52, 211, 153, 0.25);
   border-left-color: #10b981;
 }
 
 .subunit-row.is-reading {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(251, 191, 36, 0.3);
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.09) 0%, rgba(245, 158, 11, 0.02) 100%);
+  border-color: rgba(251, 191, 36, 0.28);
   border-left-color: #f59e0b;
 }
 
 [data-theme="aqua-light"] .subunit-row {
-  background: #f0fdfa;
+  background: linear-gradient(90deg, #f0fdfa 0%, #ffffff 100%);
   border-color: #ccfbf1;
-  border-left: 4px solid #0d9488;
+  border-left: 3.5px solid #0d9488;
 }
 
 [data-theme="aqua-light"] .subunit-row.is-completed {
-  background: #ecfdf5;
+  background: linear-gradient(90deg, #ecfdf5 0%, #ffffff 100%);
   border-color: #a7f3d0;
   border-left-color: #059669;
 }
 
 [data-theme="aqua-light"] .subunit-row.is-reading {
-  background: #fffbeb;
+  background: linear-gradient(90deg, #fffbeb 0%, #ffffff 100%);
   border-color: #fde68a;
   border-left-color: #d97706;
 }
 
 .btn-subunit-check {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 1.5px solid rgba(255, 255, 255, 0.35);
   background: rgba(255, 255, 255, 0.05);
@@ -1712,8 +2236,8 @@ body.modal-open {
 }
 
 .btn-subunit-check svg {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
 }
 
 [data-theme="aqua-light"] .btn-subunit-check {
@@ -1735,7 +2259,7 @@ body.modal-open {
   box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
 }
 
-/* Subunit Column & Two-Tier Typography */
+/* Subunit Column & Typography */
 .subunit-main-col {
   flex: 1;
   min-width: 0;
@@ -1771,17 +2295,17 @@ body.modal-open {
   font-size: 0.72rem;
   font-weight: 700;
   color: #2dd4bf;
-  background: rgba(13, 148, 136, 0.2);
-  border: 1px solid rgba(45, 212, 191, 0.3);
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 1px dashed rgba(45, 212, 191, 0.4);
+  padding: 1px 7px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 
 [data-theme="aqua-light"] .subunit-id-pill {
   color: #0f766e;
-  background: #ccfbf1;
-  border-color: #99f6e4;
+  background: transparent;
+  border-color: #5eead4;
 }
 
 .subunit-title-text {
@@ -1847,28 +2371,32 @@ body.modal-open {
   opacity: 1;
 }
 
-/* TOPICS CONTAINER (เรื่อง) - Full Width, No Left Indent */
+/* TOPICS CONTAINER (เรื่อง) - Nested Tree Indentation */
 .subunit-topics-box {
-  margin-left: 0;
-  padding: 4px 0;
-  border-left: none;
+  margin-left: 14px;
+  padding: 4px 0 4px 10px;
+  border-left: 2px dashed rgba(56, 189, 248, 0.45);
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 100%;
+  width: calc(100% - 14px);
   box-sizing: border-box;
 }
 
-/* TOPIC ROW (เรื่อง) */
+[data-theme="aqua-light"] .subunit-topics-box {
+  border-left-color: rgba(2, 132, 199, 0.35);
+}
+
+/* TOPIC ROW (เรื่อง) - Tier 3 Hierarchy */
 .topic-row {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  padding: 8px 12px;
-  border-radius: var(--radius-md);
-  background: rgba(2, 132, 199, 0.05);
-  border: 1px solid rgba(2, 132, 199, 0.16);
-  border-left: 4px solid #0284c7;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(2, 132, 199, 0.04);
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  border-left: 3px solid #0284c7;
   transition: all 0.18s ease;
   width: 100%;
   box-sizing: border-box;
@@ -1876,25 +2404,30 @@ body.modal-open {
 
 .topic-row:hover {
   background: rgba(2, 132, 199, 0.09);
-  border-color: rgba(2, 132, 199, 0.28);
+  border-color: rgba(56, 189, 248, 0.28);
 }
 
 .topic-row.is-completed {
-  background: rgba(16, 185, 129, 0.09);
-  border-color: rgba(52, 211, 153, 0.28);
+  background: rgba(16, 185, 129, 0.05);
+  border-color: rgba(52, 211, 153, 0.2);
   border-left-color: #10b981;
 }
 
 .topic-row.is-reading {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(245, 158, 11, 0.05);
+  border-color: rgba(251, 191, 36, 0.22);
   border-left-color: #f59e0b;
 }
 
 [data-theme="aqua-light"] .topic-row {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  border-left: 3px solid #0284c7;
+}
+
+[data-theme="aqua-light"] .topic-row:hover {
   background: #f0f9ff;
   border-color: #bae6fd;
-  border-left: 4px solid #0284c7;
 }
 
 [data-theme="aqua-light"] .topic-row.is-completed {
@@ -1910,8 +2443,8 @@ body.modal-open {
 }
 
 .btn-topic-check {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 1.5px solid rgba(56, 189, 248, 0.45);
   background: rgba(56, 189, 248, 0.08);
@@ -1948,8 +2481,8 @@ body.modal-open {
 }
 
 .btn-topic-check svg {
-  width: 12px;
-  height: 12px;
+  width: 9px;
+  height: 9px;
 }
 
 [data-theme="aqua-light"] .btn-topic-check {
@@ -2007,17 +2540,17 @@ body.modal-open {
   font-size: 0.72rem;
   font-weight: 700;
   color: #38bdf8;
-  background: rgba(2, 132, 199, 0.18);
-  border: 1px solid rgba(56, 189, 248, 0.32);
-  border-radius: var(--radius-pill);
-  padding: 2px 7px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   flex-shrink: 0;
 }
 
 [data-theme="aqua-light"] .topic-id-pill {
   color: #0369a1;
-  background: #e0f2fe;
-  border-color: #7dd3fc;
+  background: transparent;
+  border: none;
 }
 
 .topic-title-text {
@@ -2130,6 +2663,378 @@ body.modal-open {
 .btn-del-subunit:hover {
   opacity: 1;
   color: #ef4444;
+}
+
+/* ═══════════════════════════════════
+   Reading Tracker: Hierarchy Level Badges, Legend & Visual Quick Navigator
+   ═══════════════════════════════════ */
+.hierarchy-level-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1.5px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.hierarchy-level-pill .level-label {
+  opacity: 0.85;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.hierarchy-level-pill .level-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+}
+
+/* Level 1: หน่วย (Unit 1-15) - Indigo Theme */
+.hierarchy-level-pill.unit-pill {
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  color: #a5b4fc;
+}
+
+[data-theme="aqua-light"] .hierarchy-level-pill.unit-pill {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+/* Level 2: ตอน (Sub-unit) - Teal Theme */
+.hierarchy-level-pill.subunit-pill {
+  background: rgba(13, 148, 136, 0.18);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  color: #2dd4bf;
+}
+
+[data-theme="aqua-light"] .hierarchy-level-pill.subunit-pill {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #0f766e;
+}
+
+/* Level 3: เรื่อง (Topic) - Sky Blue Theme */
+.hierarchy-level-pill.topic-pill {
+  background: rgba(2, 132, 199, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  color: #38bdf8;
+}
+
+[data-theme="aqua-light"] .hierarchy-level-pill.topic-pill {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+}
+
+/* Top Legend Bar for Reading Tab */
+.reading-hierarchy-legend-bar {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  margin-top: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="aqua-light"] .reading-hierarchy-legend-bar {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.hierarchy-legend-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 0.76rem;
+}
+
+.legend-title {
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 2px;
+}
+
+.legend-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.legend-badge.badge-course {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.legend-badge.badge-unit {
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  color: #a5b4fc;
+}
+
+.legend-badge.badge-subunit {
+  background: rgba(13, 148, 136, 0.18);
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  color: #2dd4bf;
+}
+
+.legend-badge.badge-topic {
+  background: rgba(14, 165, 233, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  color: #38bdf8;
+}
+
+[data-theme="aqua-light"] .legend-badge.badge-course {
+  background: #e0f2fe;
+  border-color: #bae6fd;
+  color: #0369a1;
+}
+
+[data-theme="aqua-light"] .legend-badge.badge-unit {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+[data-theme="aqua-light"] .legend-badge.badge-subunit {
+  background: #f0fdfa;
+  border-color: #99f6e4;
+  color: #0f766e;
+}
+
+[data-theme="aqua-light"] .legend-badge.badge-topic {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
+}
+
+.legend-arrow {
+  color: var(--text-dim);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+/* In-Book Hierarchy Strip */
+.book-hierarchy-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px;
+}
+
+[data-theme="aqua-light"] .book-hierarchy-strip {
+  background: rgba(241, 245, 249, 0.8);
+  border-color: #e2e8f0;
+}
+
+.hier-title {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.hier-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1.5px 7px;
+  border-radius: var(--radius-pill);
+}
+
+.hier-badge.hier-course {
+  background: rgba(56, 189, 248, 0.14);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.hier-badge.hier-unit {
+  background: rgba(99, 102, 241, 0.16);
+  color: #a5b4fc;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
+.hier-badge.hier-sub {
+  background: rgba(13, 148, 136, 0.16);
+  color: #2dd4bf;
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.hier-badge.hier-topic {
+  background: rgba(2, 132, 199, 0.14);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+[data-theme="aqua-light"] .hier-badge.hier-course {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+[data-theme="aqua-light"] .hier-badge.hier-unit {
+  background: #eef2ff;
+  color: #4338ca;
+  border-color: #c7d2fe;
+}
+[data-theme="aqua-light"] .hier-badge.hier-sub {
+  background: #f0fdfa;
+  color: #0f766e;
+  border-color: #99f6e4;
+}
+[data-theme="aqua-light"] .hier-badge.hier-topic {
+  background: #f0f9ff;
+  color: #0284c7;
+  border-color: #bae6fd;
+}
+
+.hier-arrow {
+  color: var(--text-dim);
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+/* 15-Unit Visual Quick Navigator Strip */
+.book-unit-nav-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+[data-theme="aqua-light"] .book-unit-nav-strip {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.unit-nav-strip-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.unit-nav-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.unit-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.unit-nav-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  border-color: var(--border-aqua);
+  transform: translateY(-1px);
+}
+
+.unit-nav-pill.nav-completed {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #34d399;
+}
+
+.unit-nav-pill.nav-reading {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+[data-theme="aqua-light"] .unit-nav-pill {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #64748b;
+}
+
+[data-theme="aqua-light"] .unit-nav-pill.nav-completed {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+[data-theme="aqua-light"] .unit-nav-pill.nav-reading {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.nav-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-done {
+  background: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.8);
+}
+
+.dot-reading {
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
+}
+
+.dot-unread {
+  background: var(--text-dim);
+  opacity: 0.5;
+}
+
+/* Smooth Pulse Highlight for targeted unit */
+@keyframes unitPulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+    border-color: #38bdf8;
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(56, 189, 248, 0.5);
+    border-color: #38bdf8;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  }
+}
+
+.pulse-highlight {
+  animation: unitPulseGlow 1.8s ease-out;
 }
 
 /* ═══════════════════════════════════
@@ -2302,43 +3207,154 @@ body.modal-open {
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Compact Curriculum Category Grid (Strictly 2 Lines / 2 Rows on All Screens) */
+/* High-Clarity Curriculum Category Grid (Stacked Name on Top, Credits on Bottom) */
 .aqua-cat-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr) !important;
-  gap: 5px 8px;
-  margin-top: 2px;
+  gap: 8px 10px;
+  margin-top: 6px;
 }
 
 .aqua-cat-item {
-  background: rgba(0, 0, 0, 0.22);
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-sm);
-  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
-  gap: 6px;
+  gap: 4px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-[data-theme="aqua-light"] .aqua-cat-item {
-  background: rgba(245, 248, 252, 0.85);
-  border-color: #e2e8f0;
+.cat-item-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.cat-color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 .cat-item-name {
-  font-size: 0.72rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.cat-item-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 }
 
 .cat-item-credits {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 800;
   white-space: nowrap;
+  line-height: 1.2;
 }
+
+.cat-mini-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+[data-theme="aqua-light"] .cat-mini-bar {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.cat-mini-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+/* Category 1: หมวดศึกษาทั่วไป (Sky / Cyan Blue) */
+.cat-item-gen {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.14) 0%, rgba(2, 132, 199, 0.05) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-left: 4px solid #0284c7;
+}
+.cat-item-gen .cat-color-dot { background: #38bdf8; box-shadow: 0 0 6px rgba(56, 189, 248, 0.6); }
+.cat-item-gen .cat-item-credits { color: #38bdf8; }
+.fill-gen { background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%); }
+
+[data-theme="aqua-light"] .cat-item-gen {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bae6fd;
+  border-left: 4px solid #0284c7;
+}
+[data-theme="aqua-light"] .cat-item-gen .cat-item-credits { color: #0369a1; }
+
+/* Category 2: วิชาเฉพาะ (บังคับ) (Amber / Gold) */
+.cat-item-core {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.14) 0%, rgba(217, 119, 6, 0.05) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  border-left: 4px solid #d97706;
+}
+.cat-item-core .cat-color-dot { background: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.6); }
+.cat-item-core .cat-item-credits { color: #fbbf24; }
+.fill-core { background: linear-gradient(90deg, #d97706 0%, #fbbf24 100%); }
+
+[data-theme="aqua-light"] .cat-item-core {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: #fde68a;
+  border-left: 4px solid #d97706;
+}
+[data-theme="aqua-light"] .cat-item-core .cat-item-credits { color: #b45309; }
+
+/* Category 3: วิชาเฉพาะ (เลือก) (Purple / Violet) */
+.cat-item-major-elec {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.14) 0%, rgba(147, 51, 234, 0.05) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.28);
+  border-left: 4px solid #9333ea;
+}
+.cat-item-major-elec .cat-color-dot { background: #c084fc; box-shadow: 0 0 6px rgba(192, 132, 252, 0.6); }
+.cat-item-major-elec .cat-item-credits { color: #c084fc; }
+.fill-major-elec { background: linear-gradient(90deg, #9333ea 0%, #c084fc 100%); }
+
+[data-theme="aqua-light"] .cat-item-major-elec {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  border-color: #e9d5ff;
+  border-left: 4px solid #9333ea;
+}
+[data-theme="aqua-light"] .cat-item-major-elec .cat-item-credits { color: #7e22ce; }
+
+/* Category 4: วิชาเลือกเสรี (Emerald / Mint Green) */
+.cat-item-free {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0.05) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  border-left: 4px solid #10b981;
+}
+.cat-item-free .cat-color-dot { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.6); }
+.cat-item-free .cat-item-credits { color: #34d399; }
+.fill-free { background: linear-gradient(90deg, #059669 0%, #34d399 100%); }
+
+[data-theme="aqua-light"] .cat-item-free {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+  border-left: 4px solid #059669;
+}
+[data-theme="aqua-light"] .cat-item-free .cat-item-credits { color: #047857; }
 
 /* Search and Filter Chips */
 .aqua-controls-bar {
