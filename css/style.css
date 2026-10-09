@@ -373,6 +373,7 @@ body.modal-open {
 }
 
 .sync-mode-box {
+  display: block;
   flex: 1;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
@@ -407,6 +408,7 @@ body.modal-open {
 }
 
 .sync-mode-box-title {
+  display: block;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-main);
@@ -417,6 +419,7 @@ body.modal-open {
 }
 
 .sync-mode-box-sub {
+  display: block;
   font-size: 0.7rem;
   color: var(--text-muted);
   margin-top: 2px;
@@ -3300,6 +3303,7 @@ body.modal-open {
 }
 
 .aqua-progress-fill {
+  width: 0%;
   height: 100%;
   background: linear-gradient(90deg, #0284c7 0%, #38bdf8 50%, #34d399 100%);
   border-radius: var(--radius-pill);
@@ -3383,6 +3387,7 @@ body.modal-open {
 }
 
 .cat-mini-fill {
+  width: 0%;
   height: 100%;
   border-radius: 2px;
   transition: width 0.4s ease;
@@ -4921,3 +4926,61 @@ body.modal-open {
   align-items: center;
   justify-content: center;
 }
+
+/* ═════════════════════════════════════════════════
+   UTILITY & COMPONENT CLASSES (Linter Compliant)
+   ═════════════════════════════════════════════════ */
+.modal-window-sm {
+  max-width: 440px !important;
+}
+
+.modal-window-md {
+  max-width: 480px !important;
+}
+
+.mb-14 {
+  margin-bottom: 14px;
+}
+
+.grid-cols-1 {
+  grid-template-columns: 1fr !important;
+}
+
+.mb-2 {
+  margin-bottom: 2px;
+}
+
+.m-0 {
+  margin: 0;
+}
+
+.btn-theme-toggle {
+  padding: 7px 14px;
+  gap: 8px;
+}
+
+.flex-col-gap-8 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-full-center {
+  width: 100%;
+  justify-content: center;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
+}
+
+.sync-danger-divider {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(239, 68, 68, 0.25);
+}
+
